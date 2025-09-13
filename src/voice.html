@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Voice Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0d1117;
+            color: #c9d1d9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 900px;
+            background-color: #161b22;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .chat-window {
+            height: 70vh;
+            display: flex;
+            flex-direction: column;
+            padding: 1rem;
+            overflow-y: auto;
+            border-bottom: 1px solid #30363d;
+        }
+
+        .message {
+            max-width: 80%;
+            margin-bottom: 1rem;
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+        }
+
+        .user-message {
+            background-color: #21262d;
+            align-self: flex-end;
+            border-top-right-radius: 0;
+            color: #c9d1d9;
+        }
+
+        .ai-message {
+            background-color: #0c4331;
+            align-self: flex-start;
+            border-top-left-radius: 0;
+            color: #d8e5e1;
+        }
+
+        .input-area {
+            display: flex;
+            padding: 1rem;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        #start-btn,
+        #stop-btn {
+            background-color: #238636;
+            color: white;
+            padding: 0.75rem 1rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        #start-btn:disabled {
+            background-color: #30363d;
+            cursor: not-allowed;
+        }
+
+        #start-btn:hover:not(:disabled),
+        #stop-btn:hover {
+            background-color: #2ea043;
+        }
+
+        #stop-btn {
+            background-color: #e53e3e;
+        }
+
+        #stop-btn:hover {
+            background-color: #c53030;
+        }
+        .user-id {
+            font-size: 0.75rem;
+            color: #8b949e;
+            text-align: center;
+            padding: 0.5rem;
+            border-bottom: 1px solid #30363d;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white flex flex-col items-center justify-center p-4">
+    <div class="container rounded-2xl shadow-lg m-4">
+        <div class="user-id">
+            User ID: <span id="user-id-display">Loading...</span>
+        </div>
+        <div id="chat-window" class="chat-window">
+            <div class="message ai-message">
+                Hello there! I'm an AI voice assistant. Waiting for user authentication...
+            </div>
+        </div>
+        <div class="input-area">
+            <button id="start-btn" class="flex items-center justify-center space-x-2" disabled>
+                <i class="fas fa-microphone"></i>
+                <span>Start</span>
+            </button>
+            <button id="stop-btn" class="hidden flex items-center justify-center space-x-2">
+                <i class="fas fa-stop"></i>
+                <span>Stop</span>
+            </button>
+        </div>
+    </div>
+    
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, addDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
+        // Firebase global variables. These are provided by the environment.
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        // API Configuration (leave as empty strings)
+        const geminiApiKey = "";
+
+        // UI Elements
+        const chatWindow = document.getElementById('chat-window');
+        const startBtn = document.getElementById('start-btn');
+        const stopBtn = document.getElementById('stop-btn');
+        const userIdDisplay = document.getElementById('user-id-display');
+
+        let isRecording = false;
+        let mediaRecorder;
+        let audioChunks = [];
+        let auth, db, userId;
+
+        const systemPrompt = "You are a friendly and helpful AI voice assistant. Provide concise and conversational responses. Keep your answers brief, as you will be speaking them aloud.";
+
+        // Initialize Firebase and Authentication
+        async function initializeFirebase() {
+            try {
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        userId = user.uid;
+                        userIdDisplay.textContent = userId;
+                        startBtn.disabled = false; // Enable the button once authenticated
+                        displayMessage("Authentication successful! Press 'Start' to talk.", 'ai');
+
+                        // Start listening for chat messages in real time
+                        onSnapshot(collection(db, `artifacts/${appId}/public/data/conversations`), (snapshot) => {
+                            snapshot.docChanges().forEach(change => {
+                                if (change.type === "added") {
+                                    const message = change.doc.data();
+                                    displayMessage(message.text, message.sender);
+                                }
+                            });
+                        });
+                    } else {
+                        // Sign in anonymously if no token is available
+                        await signInAnonymously(auth);
+                    }
+                });
+
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (error) {
+                console.error("Firebase initialization or authentication failed:", error);
+                displayMessage("Failed to connect. Please try again later.", 'ai');
+            }
+        }
+
+        // Display messages in the chat window
+        function displayMessage(text, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.textContent = text;
+            messageDiv.classList.add('message');
+            if (sender === 'user') {
+                messageDiv.classList.add('user-message');
+            } else {
+                messageDiv.classList.add('ai-message');
+            }
+            chatWindow.appendChild(messageDiv);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        // Send a message to Firestore
+        async function saveMessage(text, sender) {
+            if (!userId) {
+                console.error("User ID not available, cannot save message.");
+                return;
+            }
+            try {
+                await addDoc(collection(db, `artifacts/${appId}/public/data/conversations`), {
+                    text,
+                    sender,
+                    timestamp: new Date(),
+                    userId
+                });
+            } catch (error) {
+                console.error("Error writing message to Firestore:", error);
+            }
+        }
+
+        // Main function to handle the conversation flow
+        async function processAudio(audioBlob) {
+            startBtn.classList.add('hidden');
+            stopBtn.classList.add('hidden');
+            displayMessage('Transcribing...', 'ai');
+
+            try {
+                // Step 1: Speech-to-Text (STT)
+                const sttResult = await getSTTResult(audioBlob);
+                await saveMessage(sttResult, 'user');
+                
+                // Step 2: LLM Text Generation
+                const llmResponse = await getLLMResponse(sttResult);
+                await saveMessage(llmResponse, 'ai');
+
+                // Step 3: Text-to-Speech (TTS)
+                await playAudioResponse(llmResponse);
+
+            } catch (error) {
+                console.error("Error in the pipeline:", error);
+                displayMessage('Sorry, something went wrong. Please try again.', 'ai');
+            } finally {
+                startBtn.classList.remove('hidden');
+            }
+        }
+
+        // Speech-to-Text with Whisper
+        async function getSTTResult(audioBlob) {
+            const whisperUrl = `https://generativelanguage.googleapis.com/v1beta/models/whisper-1:recognize?key=${geminiApiKey}`;
+            const formData = new FormData();
+            formData.append('audio', audioBlob);
+
+            const response = await fetch(whisperUrl, {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Whisper API error: ${response.status} ${errorText}`);
+            }
+
+            const data = await response.json();
+            return data.results?.[0]?.alternatives?.[0]?.transcript || "Could not transcribe audio.";
+        }
+
+        // LLM Text Generation
+        async function getLLMResponse(userQuery) {
+            const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`;
+
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                systemInstruction: { parts: [{ text: systemPrompt }] },
+            };
+
+            const response = await fetch(geminiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Gemini API error: ${response.status} ${errorText}`);
+            }
+
+            const data = await response.json();
+            return data.candidates?.[0]?.content?.parts?.[0]?.text || "No response from LLM.";
+        }
+
+        // Text-to-Speech and Playback
+        async function playAudioResponse(text) {
+            const ttsUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${geminiApiKey}`;
+            
+            const voiceName = "Zephyr"; 
+
+            const payload = {
+                contents: [{ parts: [{ text }] }],
+                generationConfig: {
+                    responseModalities: ["AUDIO"],
+                    speechConfig: {
+                        voiceConfig: {
+                            prebuiltVoiceConfig: { voiceName }
+                        }
+                    }
+                },
+            };
+
+            const response = await fetch(ttsUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`TTS API error: ${response.status} ${errorText}`);
+            }
+
+            const result = await response.json();
+            const part = result?.candidates?.[0]?.content?.parts?.[0];
+            const audioData = part?.inlineData?.data;
+            const mimeType = part?.inlineData?.mimeType;
+
+            if (audioData && mimeType && mimeType.startsWith("audio/")) {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const sampleRate = parseInt(mimeType.match(/rate=(\d+)/)[1], 10);
+                
+                const pcmData = base64ToArrayBuffer(audioData);
+                const pcm16 = new Int16Array(pcmData);
+                
+                const audioBuffer = audioContext.createBuffer(1, pcm16.length, sampleRate);
+                const channelData = audioBuffer.getChannelData(0);
+                for (let i = 0; i < pcm16.length; i++) {
+                    channelData[i] = pcm16[i] / 32768; // Normalize PCM16 to float32
+                }
+
+                const source = audioContext.createBufferSource();
+                source.buffer = audioBuffer;
+                source.connect(audioContext.destination);
+                source.start(0);
+            } else {
+                console.error("No audio data received from TTS API.");
+            }
+        }
+        
+        // Base64 to ArrayBuffer helper function
+        function base64ToArrayBuffer(base64) {
+            const binaryString = window.atob(base64);
+            const len = binaryString.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            return bytes.buffer;
+        }
+
+        // Start and Stop Recording logic
+        startBtn.onclick = () => {
+            if (isRecording) return;
+            isRecording = true;
+            startBtn.classList.add('hidden');
+            stopBtn.classList.remove('hidden');
+            audioChunks = [];
+
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    mediaRecorder = new MediaRecorder(stream);
+                    mediaRecorder.ondataavailable = event => {
+                        audioChunks.push(event.data);
+                    };
+                    mediaRecorder.onstop = () => {
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                        stream.getTracks().forEach(track => track.stop());
+                        processAudio(audioBlob);
+                    };
+                    mediaRecorder.start();
+                })
+                .catch(err => {
+                    console.error('Error accessing microphone:', err);
+                    isRecording = false;
+                    startBtn.classList.remove('hidden');
+                    stopBtn.classList.add('hidden');
+                    displayMessage('Error accessing microphone. Please check permissions.', 'ai');
+                });
+        };
+
+        stopBtn.onclick = () => {
+            if (!isRecording) return;
+            isRecording = false;
+            mediaRecorder.stop();
+            stopBtn.classList.add('hidden');
+        };
+
+        // Initialize the app on window load
+        window.onload = initializeFirebase;
+    </script>
+</body>
+</html>
