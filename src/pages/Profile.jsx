@@ -1,7 +1,7 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { Container, Typography, Paper, Box, Avatar, Grid, Divider, Alert, CircularProgress, Skeleton } from '@mui/material';
 import Layout from '../components/Layout';
-import Assessment from '../components/quizes/Assessment';
+import Assessment from '../components/assessments/Assessment';
 
 // --- Sub-components for better structure ---
 

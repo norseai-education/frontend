@@ -136,7 +136,7 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import Logo from '../common/Logo';
 
-const pages = ['Home'];
+const pages = ['Home', 'Assessment'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Admin','Logout'];
 
 function ResponsiveAppBar() {
@@ -155,6 +155,9 @@ function ResponsiveAppBar() {
     setAnchorElNav(null);
     if (page === 'Home') {
       navigate('/');
+    }
+    if (page === 'Assessment') {
+      navigate('/assessment');
     }
   };
 

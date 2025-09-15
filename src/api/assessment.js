@@ -1,36 +1,46 @@
-// Assessment API Service
-const API_BASE_URL = 'http://localhost:8000';
+// Example of how you could refactor to use axios
+import axios from 'axios';
 
-// Helper function to add timeout to fetch requests
-const fetchWithTimeout = async (url, options = {}, timeout = 5000) => {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), timeout);
+const API_BASE_URL = 'http://localhost:8025';
 
-  try {
-    const response = await fetch(url, {
-      ...options,
-      signal: controller.signal
-    });
-    clearTimeout(timeoutId);
-    return response;
-  } catch (error) {
-    clearTimeout(timeoutId);
-    if (error.name === 'AbortError') {
+// Create axios instance with default config
+const apiClient = axios.create({
+  baseURL: API_BASE_URL,
+  timeout: 5000,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+// Add request interceptor for auth tokens (if needed later)
+apiClient.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('session_token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+// Add response interceptor for error handling
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.code === 'ECONNABORTED') {
       throw new Error('Request timed out. Please check your connection.');
     }
     throw error;
   }
-};
+);
 
 export class AssessmentAPI {
   // Fetch assessment data
   static async fetchAssessment(assessmentId = 1) {
     try {
-      const response = await fetchWithTimeout(`${API_BASE_URL}/assessments/${assessmentId}`);
-      if (!response.ok) {
-        throw new Error(`Failed to fetch assessment: ${response.status}`);
-      }
-      return await response.json();
+      const response = await apiClient.get(`/assessments/${assessmentId}`);
+      return response.data;
     } catch (error) {
       console.error('Error fetching assessment:', error);
       throw error;
@@ -49,21 +59,21 @@ export class AssessmentAPI {
         time_taken: timeTaken
       };
 
-      const response = await fetchWithTimeout(`${API_BASE_URL}/assessments/${assessmentId}/submit`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(submission)
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to submit assessment: ${response.status}`);
-      }
-
-      return await response.json();
+      const response = await apiClient.post(`/assessments/${assessmentId}/submit`, submission);
+      return response.data;
     } catch (error) {
       console.error('Error submitting assessment:', error);
+      throw error;
+    }
+  }
+
+  // Get assessment problems
+  static async giveAssessment() {
+    try {
+      const response = await apiClient.get('/assessment/give_assessment');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching assessment problems:', error);
       throw error;
     }
   }
@@ -71,8 +81,8 @@ export class AssessmentAPI {
   // Health check
   static async healthCheck() {
     try {
-      const response = await fetchWithTimeout(`${API_BASE_URL}/health`, {}, 2000);
-      return response.ok;
+      const response = await apiClient.get('/health', { timeout: 2000 });
+      return response.status === 200;
     } catch (error) {
       console.error('Health check failed:', error);
       return false;

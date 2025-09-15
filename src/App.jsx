@@ -10,6 +10,7 @@ import Account from './pages/Account';
 import Dashboard from './pages/Dashboard';
 import Admin from './pages/Admin';
 import Logout from './pages/Logout';
+import Assessment from './pages/Assessment';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/logout" element={<Logout />} />
+        <Route path="/assessment" element={<Assessment />} />
       </Routes>
     </Router>
   );
