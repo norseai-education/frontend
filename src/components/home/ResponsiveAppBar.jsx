@@ -172,9 +172,6 @@ function ResponsiveAppBar() {
     if (setting === 'Dashboard') {
       navigate('/dashboard');
     }
-    if (setting === 'Admin') {
-      navigate('/admin');
-    }
     if (setting === 'Logout') {
       navigate('/logout');
     }
