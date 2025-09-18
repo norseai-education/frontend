@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App.jsx';
+import { Auth0Provider } from '@auth0/auth0-react';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 const darkTheme = createTheme({
@@ -24,8 +25,16 @@ const darkTheme = createTheme({
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <ThemeProvider theme={darkTheme}>
-      <App />
-    </ThemeProvider>
+    <Auth0Provider
+      domain="dev-sunshineeliteeducation.us.auth0.com"
+      clientId="3N0bbqF2QIUFvmTOc8VMsybTFjUjyxMT"
+      authorizationParams={{
+        redirect_uri: window.location.origin
+      }}
+    >
+      <ThemeProvider theme={darkTheme}>
+        <App />
+      </ThemeProvider>
+    </Auth0Provider>
   </React.StrictMode>,
 );
