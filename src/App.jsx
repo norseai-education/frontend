@@ -12,6 +12,7 @@ import Admin from './pages/Admin';
 import Logout from './pages/Logout';
 import Assessment from './pages/Assessment';
 import Access from './pages/Access';
+import NotFound from './pages/NotFound';
 
 function App() {
   return (
@@ -27,8 +28,9 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/logout" element={<Logout />} />
-  <Route path="/assessment" element={<Assessment />} />
-  <Route path="/access" element={<Access />} />
+        <Route path="/assessment" element={<Assessment />} />
+        <Route path="/access" element={<Access />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
   );
