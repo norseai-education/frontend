@@ -29,7 +29,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       domain="dev-sunshineeliteeducation.us.auth0.com"
       clientId="3N0bbqF2QIUFvmTOc8VMsybTFjUjyxMT"
       authorizationParams={{
-        redirect_uri: window.location.origin
+        redirect_uri: window.location.origin + '/access'
       }}
     >
       <ThemeProvider theme={darkTheme}>

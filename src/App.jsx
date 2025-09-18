@@ -11,6 +11,7 @@ import Dashboard from './pages/Dashboard';
 import Admin from './pages/Admin';
 import Logout from './pages/Logout';
 import Assessment from './pages/Assessment';
+import Access from './pages/Access';
 
 function App() {
   return (
@@ -26,7 +27,8 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/logout" element={<Logout />} />
-        <Route path="/assessment" element={<Assessment />} />
+  <Route path="/assessment" element={<Assessment />} />
+  <Route path="/access" element={<Access />} />
       </Routes>
     </Router>
   );
