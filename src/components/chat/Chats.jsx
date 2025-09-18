@@ -68,7 +68,7 @@ export default function ChatApp() {
   };
 
   return (
-    <Layout>
+   
       <Box sx={{
         display: "flex",
         height: "100%", // Let Layout handle the height
@@ -442,6 +442,6 @@ export default function ChatApp() {
           </Box>
         </Box>
       </Box>
-    </Layout>
+    
   );
 }

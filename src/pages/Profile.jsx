@@ -1,7 +1,7 @@
-import React, { useState, useEffect, Suspense } from 'react';
-import { Container, Typography, Paper, Box, Avatar, Grid, Divider, Alert, CircularProgress, Skeleton } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Container, Typography, Paper, Box, Avatar, Grid, Divider, Alert, Tab } from '@mui/material';
+import { TabContext, TabList, TabPanel } from '@mui/lab';
 import Layout from '../components/Layout';
-import Assessment from '../components/assessments/Assessment';
 import { useAuth0 } from '@auth0/auth0-react';
 import LoginButton from '../components/LoginButton';
 import Loading from './Loading';
@@ -64,6 +64,11 @@ const Profile = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [value, setValue] = useState('1');
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
 
   useEffect(() => {
     if (auth0User) {
@@ -107,26 +112,27 @@ const Profile = () => {
             <>
               <ProfileHeader user={user} />
               <Divider sx={{ width: '100%', mb: 3 }} />
-              <ProfileDetails user={user} />
+              <Box sx={{ width: '100%', typography: 'body1' }}>
+                <TabContext value={value}>
+                  <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                    <TabList onChange={handleChange} aria-label="lab API tabs example">
+                      <Tab label="Profile" value="1" />
+                      <Tab label="Assessments" value="2" />
+                      <Tab label="Settings" value="3" />
+                    </TabList>
+                  </Box>
+                  <TabPanel value="1"><ProfileDetails user={user} /></TabPanel>
+                  <TabPanel value="2">Item Two</TabPanel>
+                  <TabPanel value="3">Item Three</TabPanel>
+                </TabContext>
+              </Box>
             </>
           )}
         </Paper>
+        
       </Container>
-
-      <Box sx={{ mt: 4, mb: 4 }}>
-        <Typography variant="h5" gutterBottom sx={{ textAlign: 'center', mb: 2, color: 'text.primary' }}>
-          My Assessment
-        </Typography>
-        <Suspense fallback={
-          <Container maxWidth="md" sx={{ mt: 2 }}>
-            <Alert severity="info">
-              Loading assessment... If the server is unavailable, this may take a moment to resolve.
-            </Alert>
-          </Container>
-        }>
-          <Assessment />
-        </Suspense>
-      </Box>
+      
+ 
     </Layout>
   );
 };

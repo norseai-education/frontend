@@ -1,13 +1,15 @@
 
 
 
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import Layout from '../components/Layout';
 import Loading from './Loading';
 import LoginButton from '../components/LoginButton';
-import Chats from '../components/chat/Chats';
-import { Container, Typography, Box } from '@mui/material';
+import { Box, Typography } from '@mui/material';
+import DashboardSkeleton from '../components/dashboard/DashboardSkeleton';
+
+const DashboardDisplay = lazy(() => import('../components/dashboard/DashboardDisplay'));
 
 const Dashboard = () => {
   const { isAuthenticated, isLoading } = useAuth0();
@@ -31,7 +33,9 @@ const Dashboard = () => {
 
   return (
     <Layout>
-      <Chats />
+      <Suspense fallback={<DashboardSkeleton />}>
+        <DashboardDisplay />
+      </Suspense>
     </Layout>
   );
 };
