@@ -137,7 +137,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Logo from '../common/Logo';
 
 const pages = ['Home', 'Assessment'];
-const settings = ['Profile', 'Account', 'Dashboard', 'Admin','Logout'];
+const settings = ['Profile', 'Account', 'Dashboard', 'Admin', 'Users', 'Logout'];
 
 function ResponsiveAppBar() {
   const navigate = useNavigate();
@@ -159,6 +159,9 @@ function ResponsiveAppBar() {
     if (page === 'Assessment') {
       navigate('/assessment');
     }
+    if (page === 'Users') {
+      navigate('/users');
+    }
   };
 
   const handleCloseUserMenu = (setting) => {
@@ -171,6 +174,12 @@ function ResponsiveAppBar() {
     }
     if (setting === 'Dashboard') {
       navigate('/dashboard');
+    }
+    if (setting === 'Admin') {
+      navigate('/admin');
+    }
+    if (setting === 'Users') {
+      navigate('/users');
     }
     if (setting === 'Logout') {
       navigate('/logout');
