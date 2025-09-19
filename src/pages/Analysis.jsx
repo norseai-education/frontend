@@ -1,6 +1,6 @@
 import React from 'react';
 import Layout from '../components/Layout';
-import { Container, Typography, Button, Grid, Paper, Box } from '@mui/material';
+import { Container, Typography, Button, Grid, Paper, Box, CardActionArea } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
@@ -53,68 +53,75 @@ const Analysis = () => (
         {/* Document/Notes Section */}
         <Grid item xs={12}>
           <Paper sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom>Analyst Notes & Documentation</Typography>
-            <Typography variant="body1" paragraph>
-              This document summarizes the key findings from the student performance data collected over the last six months. The primary goal is to identify trends in student engagement, subject mastery, and overall assessment outcomes.
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              <strong>Key Observation 1:</strong> There is a consistent upward trend in average assessment scores, indicating effective learning progression. May and June show significant improvements.
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-              <strong>Key Observation 2:</strong> Math is the most frequently assessed subject, followed by Science and History. This may suggest a curriculum focus or higher student enrollment in these areas.
-            </Typography>
-             <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-              <strong>Key Observation 3:</strong> Student engagement, measured in hours, peaks over the weekend, particularly on Saturday. This highlights a potential opportunity for targeted weekend learning modules.
-            </Typography>
+            <CardActionArea>
+              <Typography variant="h6" gutterBottom>Analyst Notes & Documentation</Typography>
+              <Typography variant="body1" paragraph>
+                This document summarizes the key findings from the student performance data collected over the last six months. The primary goal is to identify trends in student engagement, subject mastery, and overall assessment outcomes.
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                <strong>Key Observation 1:</strong> There is a consistent upward trend in average assessment scores, indicating effective learning progression. May and June show significant improvements.
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                <strong>Key Observation 2:</strong> Math is the most frequently assessed subject, followed by Science and History. This may suggest a curriculum focus or higher student enrollment in these areas.
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                <strong>Key Observation 3:</strong> Student engagement, measured in hours, peaks over the weekend, particularly on Saturday. This highlights a potential opportunity for targeted weekend learning modules.
+              </Typography>
+            </CardActionArea>
           </Paper>
         </Grid>
 
         {/* Graphs Section */}
         <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 2, height: 400 }}>
-            <Typography variant="h6" gutterBottom>Monthly Performance Trend</Typography>
-            <ResponsiveContainer width="100%" height="90%">
-              <LineChart data={studentPerformanceData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Line type="monotone" dataKey="avgScore" name="Average Score" stroke="#8884d8" activeDot={{ r: 8 }} />
-                <Line type="monotone" dataKey="assessments" name="Assessments Taken" stroke="#82ca9d" />
-              </LineChart>
-            </ResponsiveContainer>
+          <Paper sx={{ height: 400 }}>
+            <CardActionArea sx={{ height: '100%', p: 2 }}>
+              <Typography variant="h6" gutterBottom>Monthly Performance Trend</Typography>
+              <ResponsiveContainer width="100%" height="90%">
+                <LineChart data={studentPerformanceData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="month" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Line type="monotone" dataKey="avgScore" name="Average Score" stroke="#8884d8" activeDot={{ r: 8 }} />
+                  <Line type="monotone" dataKey="assessments" name="Assessments Taken" stroke="#82ca9d" />
+                </LineChart>
+              </ResponsiveContainer>
+            </CardActionArea>
           </Paper>
         </Grid>
 
         <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 2, height: 400, paddingLeft: '24px', paddingRight: '24px' }}>
-            <Typography variant="h6" gutterBottom>Subject Breakdown</Typography>
-            <ResponsiveContainer width="100%" height="90%">
-              <PieChart>
-                <Pie
-                  data={subjectBreakdownData}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  outerRadius={100}
-                  fill="#8884d8"
-                  dataKey="value"
-                  nameKey="name"
-                  label={(entry) => entry.name}
-                >
-                  {subjectBreakdownData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
+          <Paper sx={{ height: 400 }}>
+            <CardActionArea sx={{ height: '100%', p: 2, paddingLeft: '24px', paddingRight: '24px' }}>
+              <Typography variant="h6" gutterBottom>Subject Breakdown</Typography>
+              <ResponsiveContainer width="100%" height="90%">
+                <PieChart>
+                  <Pie
+                    data={subjectBreakdownData}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    outerRadius={100}
+                    fill="#8884d8"
+                    dataKey="value"
+                    nameKey="name"
+                    label={(entry) => entry.name}
+                  >
+                    {subjectBreakdownData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </CardActionArea>
           </Paper>
         </Grid>
         
         <Grid item xs={12}>
-            <Paper sx={{ p: 2, height: 400 }}>
+            <Paper sx={{ height: 400 }}>
+              <CardActionArea sx={{ height: '100%', p: 2 }}>
                 <Typography variant="h6" gutterBottom>Weekly Student Engagement (Hours)</Typography>
                 <ResponsiveContainer width="100%" height="90%">
                     <BarChart data={engagementData}>
@@ -126,6 +133,7 @@ const Analysis = () => (
                         <Bar dataKey="hours" fill="#8884d8" />
                     </BarChart>
                 </ResponsiveContainer>
+              </CardActionArea>
             </Paper>
         </Grid>
 

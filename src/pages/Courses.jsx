@@ -1,6 +1,6 @@
 import React from 'react';
 import Layout from '../components/Layout';
-import { Container, Typography, Button, Grid, Paper, Box, Card, CardContent, CardActions } from '@mui/material';
+import { Container, Typography, Button, Grid, Paper, Box, Card, CardContent, CardActionArea } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, RadialBarChart, RadialBar } from 'recharts';
 
@@ -81,15 +81,17 @@ const Courses = () => (
       <Grid container spacing={3} sx={{ mb: 4 }}>
         {courseMetrics.map((metric, index) => (
           <Grid item xs={12} sm={6} md={3} key={index}>
-            <Card sx={{ backgroundColor: metric.color, color: 'white' }}>
-              <CardContent>
-                <Typography variant="h6" component="div">
-                  {metric.title}
-                </Typography>
-                <Typography variant="h3" component="div" fontWeight="bold">
-                  {metric.value}
-                </Typography>
-              </CardContent>
+            <Card sx={{ backgroundColor: metric.color, color: 'white', height: '100%' }}>
+              <CardActionArea sx={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                <CardContent>
+                  <Typography variant="h6" component="div" align="center">
+                    {metric.title}
+                  </Typography>
+                  <Typography variant="h3" component="div" fontWeight="bold" align="center">
+                    {metric.value}
+                  </Typography>
+                </CardContent>
+              </CardActionArea>
             </Card>
           </Grid>
         ))}
@@ -144,20 +146,19 @@ const Courses = () => (
         {courseList.map((course, index) => (
           <Grid item xs={12} sm={6} md={4} key={index}>
             <Card sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-              <CardContent sx={{ flexGrow: 1 }}>
-                <Typography variant="h6" component="div" gutterBottom>
-                  {course.title}
-                </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                  Instructor: {course.instructor}
-                </Typography>
-                <Typography variant="body2">
-                  {course.description}
-                </Typography>
-              </CardContent>
-              <CardActions>
-                <Button size="small" variant="contained">View Course</Button>
-              </CardActions>
+              <CardActionArea sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                <CardContent sx={{ width: '100%' }}>
+                  <Typography variant="h6" component="div" gutterBottom>
+                    {course.title}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                    Instructor: {course.instructor}
+                  </Typography>
+                  <Typography variant="body2">
+                    {course.description}
+                  </Typography>
+                </CardContent>
+              </CardActionArea>
             </Card>
           </Grid>
         ))}

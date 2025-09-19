@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { Grid, Card, CardContent, Typography, CardActions, Button, Box, Divider } from '@mui/material';
-import { Link } from 'react-router-dom';
+import { Grid, Card, CardContent, Typography, CardActionArea, Box } from '@mui/material';
+import { Link as RouterLink } from 'react-router-dom';
 
 const cardData = [
   { title: 'Math 101 Assessments', content: 'View and manage student assessments.', path: '/math-assessment' },
@@ -20,18 +20,16 @@ const DashboardDisplay = () => {
         {cardData.map((card, index) => (
           <Grid item xs={12} sm={6} md={4} key={index}>
             <Card sx={{ minWidth: 300, height: 350, display: 'flex', flexDirection: 'column' }}>
-              <CardContent sx={{ flexGrow: 1 }}>
-                <Typography variant="h5" component="div">
-                  {card.title}
-                </Typography>
-                <Typography sx={{ mt: 1.5 }} color="text.secondary">
-                  {card.content}
-                </Typography>
-              </CardContent>
-              <Divider />
-              <CardActions>
-                <Button size="small" component={Link} to={card.path}>Learn More</Button>
-              </CardActions>
+              <CardActionArea component={RouterLink} to={card.path} sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'flex-start', p: 2 }}>
+                <CardContent>
+                  <Typography variant="h5" component="div">
+                    {card.title}
+                  </Typography>
+                  <Typography sx={{ mt: 1.5 }} color="text.secondary">
+                    {card.content}
+                  </Typography>
+                </CardContent>
+              </CardActionArea>
             </Card>
           </Grid>
         ))}
