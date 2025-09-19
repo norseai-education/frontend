@@ -1,5 +1,6 @@
 import React from 'react';
-import { Container } from '@mui/material';
+import { Container, Button } from '@mui/material';
+import { Link as RouterLink } from 'react-router-dom';
 import Layout from '../components/Layout';
 import DashboardLayout from '../components/admin/DashboardLayout';
 import Table from '../components/admin/Table';
@@ -18,7 +19,7 @@ const Admin = () => {
     return (
       <Layout>
         <Container sx={{ textAlign: 'center', mt: 8 }}>
-          <h2>You must be signed in to access the admin dashboard.</h2>
+          <h2>You must be signed in to access the Admin Dashboard.</h2>
           <LoginButton />
         </Container>
       </Layout>
@@ -27,8 +28,10 @@ const Admin = () => {
 
   return (
     <Layout>
+      <DashboardLayout></DashboardLayout>
       <Container>
-        <DashboardLayout />
+        <Button component={RouterLink} to="/" variant="outlined" sx={{ mt: 2 }}>Return to App</Button>
+        <h1>Admin Dashboard</h1>
         <Table />
       </Container>
     </Layout>

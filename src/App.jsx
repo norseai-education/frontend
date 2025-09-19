@@ -20,6 +20,10 @@ import GeometryAssessment from './pages/GeometryAssessment';
 import MachineLearningAssessment from './pages/MachineLearningAssessment';
 import DeepLearningAssessment from './pages/DeepLearningAssessment';
 import UserDetails from './pages/UserDetails';
+import PlaceholderPage from './pages/PlaceholderPage';
+import Courses from './pages/Courses';
+import Analysis from './pages/Analysis';
+import Materials from './pages/Materials';
 
 function App() {
   return (
@@ -44,6 +48,10 @@ function App() {
         <Route path="/machine-learning-assessment" element={<MachineLearningAssessment />} />
         <Route path="/deep-learning-assessment" element={<DeepLearningAssessment />} />
         <Route path="/user/:id" element={<UserDetails />} />
+        <Route path="/apps" element={<PlaceholderPage title="Apps" />} />
+        <Route path="/materials" element={<Materials />} />
+        <Route path="/courses" element={<Courses />} />
+        <Route path="/analysis" element={<Analysis />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
