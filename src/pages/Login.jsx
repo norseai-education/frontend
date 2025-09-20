@@ -1,37 +1,18 @@
-<<<<<<< HEAD
-import React from 'react';
-import { Box, Container, Typography } from '@mui/material';
+
+import { Box, Container, Typography, TextField, Button, CircularProgress, Alert, Fade, useTheme } from '@mui/material';
 import { styled } from '@mui/system';
 import Layout from '../components/Layout';
 import LoginButton from '../components/LoginButton';
-=======
-import React, { useState, useEffect } from 'react';
 import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom';
-import {
-  Box,
-  Container,
-  Typography,
-  TextField,
-  Button,
-  CircularProgress,
-  Alert,
-  Fade,
-  useTheme,
-} from '@mui/material';
-import { styled } from '@mui/system';
 import LoginHeader from '../components/login/LoginHeader';
 import { useAuth } from '../contexts/AuthContext';
->>>>>>> temp-assessment-branch
 
 const StyledContainer = styled(Container)(({ theme }) => ({
   background: theme.palette.background.paper,
   padding: '40px',
   borderRadius: '20px',
   boxShadow: '0 20px 40px rgba(0, 0, 0, 0.1)',
-<<<<<<< HEAD
-=======
   border: 'none',
->>>>>>> temp-assessment-branch
   width: '90%',
   maxWidth: '400px',
   textAlign: 'center',
@@ -45,13 +26,6 @@ const Logo = styled(Typography)(({ theme }) => ({
 }));
 
 const Login = () => {
-<<<<<<< HEAD
-  return (
-    <Layout>
-      <Box
-        sx={{
-          background: 'linear-gradient(135deg, #182c87 0%, #120c3f 100%)',
-=======
   const theme = useTheme();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -60,7 +34,7 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { login, isAuthenticated } = useAuth();
-  
+
   // Get the intended destination from location state
   const from = location.state?.from?.pathname || '/dashboard';
 
@@ -81,10 +55,10 @@ const Login = () => {
 
     try {
       const result = await login(username, password);
-      
+
       if (result.success) {
         setMessage({ text: 'Login successful! Redirecting...', type: 'success' });
-        
+
         setTimeout(() => {
           navigate(from, { replace: true });
         }, 1500);
@@ -100,90 +74,85 @@ const Login = () => {
   };
 
   return (
-    <LoginHeader>
-      <Box
-        sx={{
->>>>>>> temp-assessment-branch
-          minHeight: 'calc(100vh - 64px)',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-      >
-        <StyledContainer maxWidth="sm">
-          <Logo variant="h1">NorseAI</Logo>
-          <Typography variant="subtitle1" color="text.secondary" sx={{ mb: 3 }}>
-            Login to your account
-          </Typography>
-<<<<<<< HEAD
-          <LoginButton />
-        </StyledContainer>
-      </Box>
-    </Layout>
-=======
-
-          <Box component="form" onSubmit={handleLogin} sx={{ mt: 1 }}>
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="username"
-              label="Username"
-              name="username"
-              autoComplete="username"
-              autoFocus
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            
-            <Fade in={message.text !== ''}>
-              <Alert
-                severity={message.type === 'success' ? 'success' : 'error'}
-                sx={{ mt: 2, mb: 2 }}
-              >
-                {message.text}
-              </Alert>
-            </Fade>
-
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              disabled={loading}
-              sx={{
-                mt: 3,
-                mb: 2,
-                p: '12px',
-                fontWeight: 'bold',
-                bgcolor: theme.palette.primary.main,
-                '&:hover': { bgcolor: theme.palette.primary.dark },
-              }}
-            >
-              {loading ? <CircularProgress size={24} color="inherit" /> : 'Login'}
-            </Button>
-            <Typography variant="body2" color="text.secondary">
-              Don't have an account?{' '}
-              <RouterLink to="/signup" style={{ color: theme.palette.primary.main, textDecoration: 'none', fontWeight: 'bold' }}>
-                Sign Up
-              </RouterLink>
+    <Layout>
+      <LoginHeader>
+        <Box
+          sx={{
+            minHeight: 'calc(100vh - 64px)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            background: 'linear-gradient(135deg, #182c87 0%, #120c3f 100%)',
+          }}
+        >
+          <StyledContainer maxWidth="sm">
+            <Logo variant="h1">NorseAI</Logo>
+            <Typography variant="subtitle1" color="text.secondary" sx={{ mb: 3 }}>
+              Login to your account
             </Typography>
-          </Box>
-        </StyledContainer>
-      </Box>
-    </LoginHeader>
->>>>>>> temp-assessment-branch
+            <LoginButton />
+            <Box component="form" onSubmit={handleLogin} sx={{ mt: 1 }}>
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="username"
+                label="Username"
+                name="username"
+                autoComplete="username"
+                autoFocus
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                name="password"
+                label="Password"
+                type="password"
+                id="password"
+                autoComplete="current-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+
+              <Fade in={message.text !== ''}>
+                <Alert
+                  severity={message.type === 'success' ? 'success' : 'error'}
+                  sx={{ mt: 2, mb: 2 }}
+                >
+                  {message.text}
+                </Alert>
+              </Fade>
+
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                disabled={loading}
+                sx={{
+                  mt: 3,
+                  mb: 2,
+                  p: '12px',
+                  fontWeight: 'bold',
+                  bgcolor: theme.palette.primary.main,
+                  '&:hover': { bgcolor: theme.palette.primary.dark },
+                }}
+              >
+                {loading ? <CircularProgress size={24} color="inherit" /> : 'Login'}
+              </Button>
+              <Typography variant="body2" color="text.secondary">
+                Don't have an account?{' '}
+                <RouterLink to="/signup" style={{ color: theme.palette.primary.main, textDecoration: 'none', fontWeight: 'bold' }}>
+                  Sign Up
+                </RouterLink>
+              </Typography>
+            </Box>
+          </StyledContainer>
+        </Box>
+      </LoginHeader>
+    </Layout>
   );
 };
 

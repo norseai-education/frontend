@@ -1,11 +1,4 @@
 
-<<<<<<< HEAD
-import React from 'react';
-import { Box, Container, Typography } from '@mui/material';
-import { styled } from '@mui/system';
-import Layout from '../components/Layout';
-import SignupButton from '../components/SignupButton';
-=======
 import React, { useState, useEffect } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import {
@@ -22,7 +15,6 @@ import {
 import { styled } from '@mui/system';
 import Layout from '../components/Layout';
 import { useAuth } from '../contexts/AuthContext';
->>>>>>> temp-assessment-branch
 
 const StyledContainer = styled(Container)(({ theme }) => ({
   background: theme.palette.background.paper,
@@ -42,8 +34,6 @@ const Logo = styled(Typography)(({ theme }) => ({
 }));
 
 const Signup = () => {
-<<<<<<< HEAD
-=======
   const theme = useTheme();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -93,20 +83,10 @@ const Signup = () => {
     }
   };
 
->>>>>>> temp-assessment-branch
   return (
     <Layout>
       <Box
         sx={{
-<<<<<<< HEAD
-          background: 'linear-gradient(135deg, #182c87 0%, #120c3f 100%)',
-          minHeight: 'calc(100vh - 64px)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-=======
           background: theme.palette.mode === 'dark' 
             ? 'linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%)' 
             : 'linear-gradient(135deg, #182c87 0%, #120c3f 100%)',
@@ -127,15 +107,12 @@ const Signup = () => {
             )}
           </Box>
         </Fade>
->>>>>>> temp-assessment-branch
         <StyledContainer>
           <Logo variant="h1">NorseAI</Logo>
           <Typography variant="h6" sx={{ mb: 2, color: 'text.secondary' }}>
             Create your account
           </Typography>
-<<<<<<< HEAD
           <SignupButton />
-=======
           <Box component="form" onSubmit={handleSignup} noValidate>
             <TextField
               label="Username"
@@ -203,7 +180,6 @@ const Signup = () => {
               Login
             </RouterLink>
           </Typography>
->>>>>>> temp-assessment-branch
         </StyledContainer>
       </Box>
     </Layout>
