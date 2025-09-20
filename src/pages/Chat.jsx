@@ -1,4 +1,27 @@
 import React, { useState, useEffect, useRef } from 'react';
+import {
+  Box,
+  Container,
+  Typography,
+  TextField,
+  Button,
+  Paper,
+  Avatar,
+  Chip,
+  Alert,
+  IconButton,
+  useTheme
+} from '@mui/material';
+import {
+  Send as SendIcon,
+  SmartToy as BotIcon,
+  Person as PersonIcon,
+  ExitToApp as ExitIcon
+} from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
+import Layout from '../components/Layout';
+import { useAuth } from '../contexts/AuthContext';
+import ChatService from '../services/chatService';
 
 // Main Chat component which can be used inside a larger application
 const Chat = () => {
@@ -58,44 +81,14 @@ const Chat = () => {
   }, [messages]);
 
   // Function to handle sending a new message
-import {
-  Box,
-  Container,
-  Typography,
-  TextField,
-  Button,
-  Paper,
-  Avatar,
-  Chip,
-  Alert,
-  IconButton,
-  useTheme
-} from '@mui/material';
-import {
-  Send as SendIcon,
-  SmartToy as BotIcon,
-  Person as PersonIcon,
-  ExitToApp as ExitIcon
-} from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
-import Layout from '../components/Layout';
-import { useAuth } from '../contexts/AuthContext';
-import ChatService from '../services/chatService';
-
-const Chat = () => {
   const theme = useTheme();
   const navigate = useNavigate();
   const { user } = useAuth();
 
   // Chat state
-  const [messages, setMessages] = useState([]);
-  const [inputMessage, setInputMessage] = useState('');
-  const [status, setStatus] = useState('Connecting...');
-  const [isStreaming, setIsStreaming] = useState(false);
   const [error, setError] = useState('');
 
   // Refs
-  const chatBoxRef = useRef(null);
   const messagesEndRef = useRef(null);
 
   // Initialize chat and check status
@@ -163,7 +156,6 @@ const Chat = () => {
     const message = inputMessage.trim();
     if (!message || isStreaming) return;
 
-<<<<<<< HEAD
     // Add the user's message to the state
     setMessages(prevMessages => [...prevMessages, { sender: 'user', text: message }]);
     setInputMessage('');
@@ -205,112 +197,13 @@ const Chat = () => {
         newMessages[newMessages.length - 1].text = "Sorry, an error occurred. Please try again.";
         return newMessages;
       });
-=======
-    // Add user message
-    const userMessage = {
-      id: Date.now(),
-      sender: 'user',
-      text: inputMessage,
-      timestamp: new Date()
-    };
-    
-    setMessages(prev => [...prev, userMessage]);
-    setInputMessage('');
-    setIsStreaming(true);
-    setStatus('Sending message...');
-    setError('');
-
-    // Add placeholder AI message for response
-    const aiMessageId = Date.now() + 1;
-    const aiMessage = {
-      id: aiMessageId,
-      sender: 'ai',
-      text: '',
-      timestamp: new Date()
-    };
-    
-    setMessages(prev => [...prev, aiMessage]);
-
-    try {
-      const response = await ChatService.sendMessage(user.studentId, inputMessage);
-      
-      // Update the AI message with the complete response
-      setMessages(prev => 
-        prev.map(msg => 
-          msg.id === aiMessageId 
-            ? { ...msg, text: response }
-            : msg
-        )
-      );
-
-    } catch (err) {
-      console.error('Chat error:', err);
-      setError('Failed to send message. Please try again.');
-      
-      // Update AI message with error
-      setMessages(prev => 
-        prev.map(msg => 
-          msg.id === aiMessageId 
-            ? { ...msg, text: 'Sorry, I encountered an error. Please try again.' }
-            : msg
-        )
-      );
->>>>>>> temp-assessment-branch
     } finally {
       setIsStreaming(false);
       setStatus('Connected');
     }
   };
 
-<<<<<<< HEAD
   // Main component JSX structure
-  return (
-    <div className="flex flex-col min-h-screen bg-gray-100 p-4 font-sans antialiased">
-      {/* Chat Box */}
-      <div 
-        ref={chatBoxRef}
-        className="flex-1 bg-white p-6 rounded-xl shadow-lg overflow-y-auto mb-4 flex flex-col gap-4"
-        style={{ maxHeight: '60vh' }}
-      >
-        {messages.map((msg, index) => (
-          <div key={index} className={`flex items-start gap-3 ${msg.sender === 'user' ? 'justify-end' : ''}`}>
-            <div 
-              className={`max-w-[75%] px-4 py-2 rounded-2xl ${msg.sender === 'user' 
-                ? 'bg-blue-500 text-white rounded-tr-none' 
-                : 'bg-gray-200 text-gray-800 rounded-tl-none'}`}
-            >
-              <p className="whitespace-pre-wrap">{msg.text}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Message Input Area */}
-      <div className="flex items-center p-2 bg-white rounded-xl shadow-lg">
-        <input
-          type="text"
-          value={inputMessage}
-          onChange={(e) => setInputMessage(e.target.value)}
-          onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-          placeholder="Type your message..."
-          disabled={isStreaming}
-          className="flex-1 px-4 py-3 border-none rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <button 
-          onClick={handleSendMessage} 
-          disabled={isStreaming}
-          className="ml-3 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow-md transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          Send
-        </button>
-      </div>
-      
-      {/* Status Bar */}
-      <div className="mt-4 text-center text-gray-500 text-xs">
-        {status}
-      </div>
-    </div>
-=======
   const handleKeyPress = (event) => {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
@@ -458,8 +351,7 @@ const Chat = () => {
         </Paper>
       </Container>
     </Layout>
->>>>>>> temp-assessment-branch
   );
-};
+}
 
 export default Chat;
