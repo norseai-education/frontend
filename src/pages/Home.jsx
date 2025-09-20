@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import {
@@ -97,119 +96,75 @@ const Home = () => {
       navigate('/loading');
     }
   };
-=======
-import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import {
-  Container,
-  Box,
-  CssBaseline,
-  Typography
-} from '@mui/material';
-import FeatureCards from '../components/dashboard/FeatureCards';
-import HomeHeader from '../components/home/HomeHeader';
-import Footer from '../components/dashboard/Footer';
-import { useAuth } from '../contexts/AuthContext';
-
-const Home = () => {
-  const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
-
-  // Redirect authenticated users to dashboard
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate('/dashboard', { replace: true });
-    }
-  }, [isAuthenticated, navigate]);
->>>>>>> temp-assessment-branch
 
   return (
-    <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', minHeight: '100vh', background: 'linear-gradient(135deg, #182c87 0%, #120c3f 100%)', color: 'white' }}>
+    <React.Fragment>
       <CssBaseline />
-<<<<<<< HEAD
-      <ResponsiveAppBar 
-        isAuthenticated={isAuthenticated} 
-        username={username} 
-        handleLogout={handleLogout} 
+      <ResponsiveAppBar
+        isAuthenticated={isAuthenticated}
+        username={username}
+        handleLogout={handleLogout}
       />
-=======
-      <HomeHeader />
->>>>>>> temp-assessment-branch
-
-      <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center', p: 4 }}>
-        <Box sx={{ maxWidth: 600, mb: 6 }}>
-          <Typography variant="h1" sx={{ fontSize: { xs: '2.5rem', md: '4rem' }, fontWeight: 'bold', mb: 2, textShadow: '2px 2px 4px rgba(0,0,0,0.3)' }}>
-            NorseAI
+      <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+        <Box sx={{ textAlign: 'center', mb: 4 }}>
+          <Typography variant="h2" component="h1" gutterBottom>
+            Welcome to NorseAI
           </Typography>
-          <Typography variant="h6" sx={{ mb: 4, opacity: 0.9 }}>
-            Education powered by artificial intelligence.
+          <Typography variant="h5" component="h2" gutterBottom>
+            Your AI-powered learning assistant
           </Typography>
-<<<<<<< HEAD
           <Button
             variant="contained"
+            color="primary"
+            size="large"
+            sx={{ mt: 3 }}
             onClick={startLesson}
-            sx={{
-              background: 'linear-gradient(45deg, #ff6b6b, #feca57)',
-              color: 'white',
-              fontSize: { xs: '1.2rem', md: '1.4rem' },
-              padding: '20px 40px',
-              borderRadius: '50px',
-              boxShadow: '0 8px 25px rgba(255, 107, 107, 0.4)',
-              textTransform: 'uppercase',
-              letterSpacing: '1px',
-              fontWeight: 600,
-              '&:hover': {
-                transform: 'translateY(-3px)',
-                boxShadow: '0 12px 30px rgba(255, 107, 107, 0.6)',
-              },
-            }}
           >
-            Get Started
+            Start Lesson
           </Button>
-=======
->>>>>>> temp-assessment-branch
         </Box>
-
-        <Container maxWidth="lg" sx={{ mt: 8 }}>
-          <FeatureCards />
-        </Container>
-      </Box>
-
-<<<<<<< HEAD
+        <FeatureCards />
+      </Container>
+      <Footer />
       <Modal
-        aria-labelledby="login-modal-title"
-        aria-describedby="login-modal-description"
         open={showLoginModal}
         onClose={() => setShowLoginModal(false)}
         closeAfterTransition
         BackdropComponent={Backdrop}
-        BackdropProps={{ timeout: 500 }}
+        BackdropProps={{
+          timeout: 500,
+        }}
       >
         <Fade in={showLoginModal}>
           <Box sx={modalStyle}>
-            <Typography id="login-modal-title" variant="h6" component="h2" color="black">
-              Login Required
+            <Typography variant="h6" component="h2" gutterBottom>
+              Please log in to start a lesson
             </Typography>
-            <Typography id="login-modal-description" sx={{ mt: 2, color: 'text.secondary' }}>
-              Please login or sign up to start your learning journey with NorseAI.
-            </Typography>
-            <Stack direction="row" spacing={2} sx={{ mt: 3, justifyContent: 'center' }}>
-              <Button component={RouterLink} to="/login" variant="contained" sx={{ bgcolor: '#667eea', '&:hover': { bgcolor: '#5a67d8' } }}>
+            <Stack direction="row" spacing={2} justifyContent="center">
+              <Button
+                variant="contained"
+                color="primary"
+                component={RouterLink}
+                to="/login"
+                onClick={() => setShowLoginModal(false)}
+              >
                 Login
               </Button>
-              <Button component={RouterLink} to="/signup" variant="outlined" sx={{ color: '#667eea', borderColor: '#667eea' }}>
-                Sign Up
+              <Button
+                variant="outlined"
+                color="primary"
+                component={RouterLink}
+                to="/register"
+                onClick={() => setShowLoginModal(false)}
+              >
+                Register
               </Button>
             </Stack>
           </Box>
         </Fade>
       </Modal>
-
-=======
->>>>>>> temp-assessment-branch
-      {/* <Footer /> */}
-    </Box>
+    </React.Fragment>
   );
-};
+}
 
 export default Home;

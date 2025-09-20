@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-<<<<<<< HEAD
 
 // Main Chat component which can be used inside a larger application
 const Chat = () => {
@@ -59,7 +58,6 @@ const Chat = () => {
   }, [messages]);
 
   // Function to handle sending a new message
-=======
 import {
   Box,
   Container,
@@ -161,7 +159,6 @@ const Chat = () => {
   }, [messages]);
 
   // Handle sending messages
->>>>>>> temp-assessment-branch
   const handleSendMessage = async () => {
     const message = inputMessage.trim();
     if (!message || isStreaming) return;

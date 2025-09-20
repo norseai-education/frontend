@@ -1,5 +1,4 @@
 import React from 'react';
-<<<<<<< HEAD
 import { useAuth0 } from '@auth0/auth0-react';
 import Layout from '../components/Layout';
 import AssessmentDisplay from '../components/assessments/AssessmentDisplay';
@@ -27,15 +26,6 @@ const Assessment = () => {
   return (
     <Layout>
       <AssessmentDisplay />
-=======
-import Layout from '../components/Layout';
-import AssessmentQuiz from '../components/assessment/AssessmentQuiz';
-
-const Assessment = () => {
-  return (
-    <Layout>
-      <AssessmentQuiz />
->>>>>>> temp-assessment-branch
     </Layout>
   );
 };
