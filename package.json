@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
+<<<<<<< HEAD
     "test": "jest"
   },
   "dependencies": {
@@ -15,12 +16,21 @@
     "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^7.3.2",
     "@mui/lab": "^7.0.0-beta.17",
+=======
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/icons-material": "^7.3.2",
+>>>>>>> temp-assessment-branch
     "@mui/material": "^7.3.1",
     "@toolpad/core": "^0.16.0",
     "axios": "^1.12.1",
     "firebase": "^12.2.1",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
+<<<<<<< HEAD
     "react-force-graph-2d": "^1.29.0",
     "react-router-dom": "^7.9.1",
     "recharts": "^3.2.1"
@@ -36,12 +46,25 @@
     "@types/react-dom": "^19.1.7",
     "@vitejs/plugin-react": "^5.0.0",
     "babel-jest": "^30.1.2",
+=======
+    "react-router-dom": "^7.9.1",
+    "recharts": "^3.1.2"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.33.0",
+    "@types/react": "^19.1.10",
+    "@types/react-dom": "^19.1.7",
+    "@vitejs/plugin-react": "^5.0.0",
+>>>>>>> temp-assessment-branch
     "eslint": "^9.33.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^16.3.0",
+<<<<<<< HEAD
     "jest": "^30.1.3",
     "jest-environment-jsdom": "^30.1.2",
+=======
+>>>>>>> temp-assessment-branch
     "vite": "^7.1.2"
   }
 }

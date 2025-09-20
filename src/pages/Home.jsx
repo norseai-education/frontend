@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import {
@@ -96,15 +97,44 @@ const Home = () => {
       navigate('/loading');
     }
   };
+=======
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import {
+  Container,
+  Box,
+  CssBaseline,
+  Typography
+} from '@mui/material';
+import FeatureCards from '../components/dashboard/FeatureCards';
+import HomeHeader from '../components/home/HomeHeader';
+import Footer from '../components/dashboard/Footer';
+import { useAuth } from '../contexts/AuthContext';
+
+const Home = () => {
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+
+  // Redirect authenticated users to dashboard
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
+>>>>>>> temp-assessment-branch
 
   return (
     <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', minHeight: '100vh', background: 'linear-gradient(135deg, #182c87 0%, #120c3f 100%)', color: 'white' }}>
       <CssBaseline />
+<<<<<<< HEAD
       <ResponsiveAppBar 
         isAuthenticated={isAuthenticated} 
         username={username} 
         handleLogout={handleLogout} 
       />
+=======
+      <HomeHeader />
+>>>>>>> temp-assessment-branch
 
       <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center', p: 4 }}>
         <Box sx={{ maxWidth: 600, mb: 6 }}>
@@ -114,6 +144,7 @@ const Home = () => {
           <Typography variant="h6" sx={{ mb: 4, opacity: 0.9 }}>
             Education powered by artificial intelligence.
           </Typography>
+<<<<<<< HEAD
           <Button
             variant="contained"
             onClick={startLesson}
@@ -135,6 +166,8 @@ const Home = () => {
           >
             Get Started
           </Button>
+=======
+>>>>>>> temp-assessment-branch
         </Box>
 
         <Container maxWidth="lg" sx={{ mt: 8 }}>
@@ -142,6 +175,7 @@ const Home = () => {
         </Container>
       </Box>
 
+<<<<<<< HEAD
       <Modal
         aria-labelledby="login-modal-title"
         aria-describedby="login-modal-description"
@@ -171,6 +205,8 @@ const Home = () => {
         </Fade>
       </Modal>
 
+=======
+>>>>>>> temp-assessment-branch
       {/* <Footer /> */}
     </Box>
   );

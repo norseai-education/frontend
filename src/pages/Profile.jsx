@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React, { useState, useEffect } from 'react';
 import { Container, Typography, Paper, Box, Avatar, Grid, Divider, Alert, Tab } from '@mui/material';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
@@ -5,6 +6,12 @@ import Layout from '../components/Layout';
 import { useAuth0 } from '@auth0/auth0-react';
 import LoginButton from '../components/LoginButton';
 import Loading from './Loading';
+=======
+import React, { useState, useEffect, Suspense } from 'react';
+import { Container, Typography, Paper, Box, Avatar, Grid, Divider, Alert, CircularProgress, Skeleton } from '@mui/material';
+import Layout from '../components/Layout';
+// import Assessment from '../components/assessment/Assessment';
+>>>>>>> temp-assessment-branch
 
 // --- Sub-components for better structure ---
 
@@ -60,6 +67,7 @@ const ProfileSkeleton = () => (
 // --- Main Profile Component ---
 
 const Profile = () => {
+<<<<<<< HEAD
   const { isAuthenticated, isLoading, user: auth0User } = useAuth0();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -101,6 +109,39 @@ const Profile = () => {
       </Layout>
     );
   }
+=======
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    // Simulate fetching user data from an API
+    const fetchUserData = () => {
+      setLoading(true);
+      setTimeout(() => {
+        try {
+          // Dummy user data, simulating a successful API response
+          const dummyUser = {
+            name: 'John Doe',
+            email: 'john.doe@example.com',
+            avatar: '/static/images/avatar/1.jpg',
+            bio: 'Software developer and AI enthusiast. Passionate about creating innovative solutions.',
+            memberSince: 'January 2023',
+          };
+          setUser(dummyUser);
+          setError(null);
+        } catch (error) {
+          console.error("Failed to fetch user data:", error);
+          setError('Failed to fetch user profile. Please try again later.');
+        } finally {
+          setLoading(false);
+        }
+      }, 1500); // Simulate a 1.5-second network delay
+    };
+
+    fetchUserData();
+  }, []);
+>>>>>>> temp-assessment-branch
 
   return (
     <Layout>
@@ -112,6 +153,7 @@ const Profile = () => {
             <>
               <ProfileHeader user={user} />
               <Divider sx={{ width: '100%', mb: 3 }} />
+<<<<<<< HEAD
               <Box sx={{ width: '100%', typography: 'body1' }}>
                 <TabContext value={value}>
                   <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
@@ -133,6 +175,28 @@ const Profile = () => {
       </Container>
       
  
+=======
+              <ProfileDetails user={user} />
+            </>
+          )}
+        </Paper>
+      </Container>
+
+      {/* <Box sx={{ mt: 4, mb: 4 }}>
+        <Typography variant="h5" gutterBottom sx={{ textAlign: 'center', mb: 2, color: 'text.primary' }}>
+          My Assessment
+        </Typography>
+        <Suspense fallback={
+          <Container maxWidth="md" sx={{ mt: 2 }}>
+            <Alert severity="info">
+              Loading assessment... If the server is unavailable, this may take a moment to resolve.
+            </Alert>
+          </Container>
+        }>
+          <Assessment />
+        </Suspense>
+      </Box> */}
+>>>>>>> temp-assessment-branch
     </Layout>
   );
 };

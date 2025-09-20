@@ -2,7 +2,11 @@
 
 import React from 'react';
 import { Box } from '@mui/material';
+<<<<<<< HEAD
 import ResponsiveAppBar from './home/ResponsiveAppBar';
+=======
+import ResponsiveAppBar from './dashboard/ResponsiveAppBar';
+>>>>>>> temp-assessment-branch
 
 const Layout = ({ children, ...props }) => {
   return (
