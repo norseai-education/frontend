@@ -1,6 +1,5 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-<<<<<<< HEAD
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
@@ -56,7 +55,6 @@ function App() {
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
-=======
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/common/ProtectedRoute';
 
@@ -117,7 +115,6 @@ function App() {
         </Routes>
       </Router>
     </AuthProvider>
->>>>>>> temp-assessment-branch
   );
 }
 
