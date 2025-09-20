@@ -2,6 +2,7 @@ import React, { useState, useEffect, Suspense } from 'react';
 import { Container, Typography, Paper, Box, Avatar, Grid, Divider, Alert, CircularProgress, Skeleton, Tab } from '@mui/material';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 import Layout from '../components/Layout';
+import { useAuth0 } from '@auth0/auth0-react';
 import LoginButton from '../components/LoginButton';
 import Loading from './Loading';
 // import Assessment from '../components/assessment/Assessment';
@@ -60,6 +61,7 @@ const ProfileSkeleton = () => (
 // --- Main Profile Component ---
 
 const Profile = () => {
+  const { isAuthenticated, isLoading, user: auth0User } = useAuth0();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -94,9 +96,42 @@ const Profile = () => {
 
   // Add tab state and handler
   const [value, setValue] = useState('1');
+
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+
+  useEffect(() => {
+    if (auth0User) {
+      // Use Auth0 user info for name and email
+      setUser({
+        name: auth0User.name || auth0User.nickname || auth0User.email,
+        email: auth0User.email,
+        avatar: auth0User.picture,
+        bio: 'Welcome to your NorseAI profile!',
+        memberSince: auth0User.updated_at ? new Date(auth0User.updated_at).toLocaleDateString() : '',
+      });
+      setLoading(false);
+      setError(null);
+    }
+  }, [auth0User]);
+
+  if (isLoading) {
+    return <Loading />;
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <Layout>
+        <Box sx={{ textAlign: 'center', mt: 8 }}>
+          <Typography variant="h4" sx={{ mb: 3 }}>
+            You must be signed in to view your profile.
+          </Typography>
+          <LoginButton />
+        </Box>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>

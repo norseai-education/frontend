@@ -4,27 +4,6 @@ import App from './App.jsx';
 import { Auth0Provider } from '@auth0/auth0-react';
 import { ColorModeProvider } from './styles/ColorModeProvider.jsx';
 
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-
-const darkTheme = createTheme({
-  palette: {
-    mode: 'dark',
-    primary: {
-      main: '#667eea',
-    },
-    secondary: {
-      main: '#feca57',
-    },
-    background: {
-      default: '#120c3f',
-      paper: '#182c87',
-    },
-  },
-  typography: {
-    fontFamily: ['Segoe UI', 'sans-serif'].join(','),
-  },
-});
-
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <Auth0Provider
@@ -34,11 +13,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         redirect_uri: window.location.origin + '/access'
       }}
     >
-      <ThemeProvider theme={darkTheme}>
-        <ColorModeProvider>
-          <App />
-        </ColorModeProvider>
-      </ThemeProvider>
+      <ColorModeProvider>
+        <App />
+      </ColorModeProvider>
     </Auth0Provider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );
