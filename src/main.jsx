@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App.jsx';
-<<<<<<< HEAD
 import { Auth0Provider } from '@auth0/auth0-react';
 import { ColorModeProvider } from './styles/ColorModeProvider.jsx';
 
@@ -18,7 +17,6 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <App />
       </ColorModeProvider>
     </Auth0Provider>
-=======
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 const darkTheme = createTheme({
@@ -45,6 +43,5 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <ThemeProvider theme={darkTheme}>
       <App />
     </ThemeProvider>
->>>>>>> temp-assessment-branch
   </React.StrictMode>,
 );
