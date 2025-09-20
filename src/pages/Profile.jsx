@@ -1,17 +1,10 @@
-<<<<<<< HEAD
-import React, { useState, useEffect } from 'react';
-import { Container, Typography, Paper, Box, Avatar, Grid, Divider, Alert, Tab } from '@mui/material';
+import React, { useState, useEffect, Suspense } from 'react';
+import { Container, Typography, Paper, Box, Avatar, Grid, Divider, Alert, CircularProgress, Skeleton, Tab } from '@mui/material';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 import Layout from '../components/Layout';
-import { useAuth0 } from '@auth0/auth0-react';
 import LoginButton from '../components/LoginButton';
 import Loading from './Loading';
-=======
-import React, { useState, useEffect, Suspense } from 'react';
-import { Container, Typography, Paper, Box, Avatar, Grid, Divider, Alert, CircularProgress, Skeleton } from '@mui/material';
-import Layout from '../components/Layout';
 // import Assessment from '../components/assessment/Assessment';
->>>>>>> temp-assessment-branch
 
 // --- Sub-components for better structure ---
 
@@ -67,49 +60,6 @@ const ProfileSkeleton = () => (
 // --- Main Profile Component ---
 
 const Profile = () => {
-<<<<<<< HEAD
-  const { isAuthenticated, isLoading, user: auth0User } = useAuth0();
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [value, setValue] = useState('1');
-
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
-
-  useEffect(() => {
-    if (auth0User) {
-      // Use Auth0 user info for name and email
-      setUser({
-        name: auth0User.name || auth0User.nickname || auth0User.email,
-        email: auth0User.email,
-        avatar: auth0User.picture,
-        bio: 'Welcome to your NorseAI profile!',
-        memberSince: auth0User.updated_at ? new Date(auth0User.updated_at).toLocaleDateString() : '',
-      });
-      setLoading(false);
-      setError(null);
-    }
-  }, [auth0User]);
-
-  if (isLoading) {
-    return <Loading />;
-  }
-
-  if (!isAuthenticated) {
-    return (
-      <Layout>
-        <Box sx={{ textAlign: 'center', mt: 8 }}>
-          <Typography variant="h4" sx={{ mb: 3 }}>
-            You must be signed in to view your profile.
-          </Typography>
-          <LoginButton />
-        </Box>
-      </Layout>
-    );
-  }
-=======
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -141,7 +91,12 @@ const Profile = () => {
 
     fetchUserData();
   }, []);
->>>>>>> temp-assessment-branch
+
+  // Add tab state and handler
+  const [value, setValue] = useState('1');
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
 
   return (
     <Layout>
@@ -153,7 +108,6 @@ const Profile = () => {
             <>
               <ProfileHeader user={user} />
               <Divider sx={{ width: '100%', mb: 3 }} />
-<<<<<<< HEAD
               <Box sx={{ width: '100%', typography: 'body1' }}>
                 <TabContext value={value}>
                   <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
@@ -173,15 +127,6 @@ const Profile = () => {
         </Paper>
         
       </Container>
-      
- 
-=======
-              <ProfileDetails user={user} />
-            </>
-          )}
-        </Paper>
-      </Container>
-
       {/* <Box sx={{ mt: 4, mb: 4 }}>
         <Typography variant="h5" gutterBottom sx={{ textAlign: 'center', mb: 2, color: 'text.primary' }}>
           My Assessment
@@ -196,7 +141,6 @@ const Profile = () => {
           <Assessment />
         </Suspense>
       </Box> */}
->>>>>>> temp-assessment-branch
     </Layout>
   );
 };
