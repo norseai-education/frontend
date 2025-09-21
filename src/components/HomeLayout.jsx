@@ -1,10 +1,8 @@
-
-
 import React from 'react';
 import { Box } from '@mui/material';
-import ResponsiveAppBar from './dashboard/ResponsiveAppBar';
+import ResponsiveAppBar from './home/ResponsiveAppBar';
 
-const Layout = ({ children, ...props }) => {
+const HomeLayout = ({ children, ...props }) => {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <ResponsiveAppBar {...props} />
@@ -15,4 +13,4 @@ const Layout = ({ children, ...props }) => {
   );
 };
 
-export default Layout;
+export default HomeLayout;

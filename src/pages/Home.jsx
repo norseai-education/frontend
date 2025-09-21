@@ -12,7 +12,7 @@ import {
   Button
 } from '@mui/material';
 import FeatureCards from '../components/home/FeatureCards';
-import ResponsiveAppBar from '../components/home/ResponsiveAppBar'; // Import the new component
+import HomeLayout from '../components/HomeLayout'; // Import the new layout component
 import Footer from '../components/home/Footer'; // Import the new Footer component
 
 const modalStyle = {
@@ -64,47 +64,47 @@ const Home = () => {
     checkAuthStatus();
   }, []);
 
-  const handleLogout = async () => {
-    const sessionToken = localStorage.getItem('session_token');
-    if (!window.confirm('Are you sure you want to logout?')) {
-      return;
-    }
-    try {
-      if (sessionToken) {
-        await fetch('/auth/logout', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(sessionToken),
-        });
-      }
-    } catch (error) {
-      console.error('Logout error:', error);
-    } finally {
-      localStorage.removeItem('session_token');
-      localStorage.removeItem('student_id');
-      navigate(0);
-    }
-  };
+  // const handleLogout = async () => {
+  //   const sessionToken = localStorage.getItem('session_token');
+  //   if (!window.confirm('Are you sure you want to logout?')) {
+  //     return;
+  //   }
+  //   try {
+  //     if (sessionToken) {
+  //       await fetch('/auth/logout', {
+  //         method: 'POST',
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //         },
+  //         body: JSON.stringify(sessionToken),
+  //       });
+  //     }
+  //   } catch (error) {
+  //     console.error('Logout error:', error);
+  //   } finally {
+  //     localStorage.removeItem('session_token');
+  //     localStorage.removeItem('student_id');
+  //     navigate(0);
+  //   }
+  // };
 
-  const startLesson = () => {
-    const sessionToken = localStorage.getItem('session_token');
-    if (!sessionToken) {
-      setShowLoginModal(true);
-    } else {
-      navigate('/loading');
-    }
-  };
+  // const startLesson = () => {
+  //   const sessionToken = localStorage.getItem('session_token');
+  //   if (!sessionToken) {
+  //     setShowLoginModal(true);
+  //   } else {
+  //     navigate('/loading');
+  //   }
+  // };
 
   return (
-    <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', minHeight: '100vh', background: 'linear-gradient(135deg, #182c87 0%, #120c3f 100%)', color: 'white' }}>
-      <CssBaseline />
-      <ResponsiveAppBar 
-        isAuthenticated={isAuthenticated} 
-        username={username} 
-        handleLogout={handleLogout} 
-      />
+    <HomeLayout 
+      isAuthenticated={isAuthenticated} 
+      username={username} 
+      // handleLogout={handleLogout} 
+    >
+      <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', minHeight: '100vh', background: 'rgba(24, 44, 135, 0.1)', backdropFilter: 'blur(10px)', color: 'white' }}>
+        <CssBaseline />
 
       <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center', p: 4 }}>
         <Box sx={{ maxWidth: 600, mb: 6 }}>
@@ -114,7 +114,7 @@ const Home = () => {
           <Typography variant="h6" sx={{ mb: 4, opacity: 0.9 }}>
             Education powered by artificial intelligence.
           </Typography>
-          <Button
+          {/* <Button
             variant="contained"
             onClick={startLesson}
             sx={{
@@ -134,7 +134,7 @@ const Home = () => {
             }}
           >
             Get Started
-          </Button>
+          </Button> */}
         </Box>
 
         <Container maxWidth="lg" sx={{ mt: 8 }}>
@@ -142,7 +142,7 @@ const Home = () => {
         </Container>
       </Box>
 
-      <Modal
+      {/* <Modal
         aria-labelledby="login-modal-title"
         aria-describedby="login-modal-description"
         open={showLoginModal}
@@ -169,10 +169,11 @@ const Home = () => {
             </Stack>
           </Box>
         </Fade>
-      </Modal>
+      </Modal> */}
 
       {/* <Footer /> */}
-    </Box>
+      </Box>
+    </HomeLayout>
   );
 };
 

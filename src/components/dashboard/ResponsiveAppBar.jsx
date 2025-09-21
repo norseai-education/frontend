@@ -154,7 +154,7 @@ function ResponsiveAppBar() {
   const handleCloseNavMenu = (page) => {
     setAnchorElNav(null);
     if (page === 'Home') {
-      navigate('/');
+      navigate('/dashboard');
     }
     // if (page === 'Assessment') {
     //   navigate('/assessment');

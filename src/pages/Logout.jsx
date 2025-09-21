@@ -1,23 +1,25 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth0 } from '@auth0/auth0-react';
 import { Box, Typography, Paper, Container, CircularProgress } from '@mui/material';
 import Layout from '../components/Layout';
 
 const Logout = () => {
   const navigate = useNavigate();
+  const { logout } = useAuth0();
 
   useEffect(() => {
     // Clear user session data
     localStorage.removeItem('session_token');
     localStorage.removeItem('student_id');
 
-    // Redirect to home page after a short delay
-    const timer = setTimeout(() => {
-      navigate('/');
-    }, 2000); // 2-second delay
-
-    return () => clearTimeout(timer);
-  }, [navigate]);
+    // Trigger Auth0 logout immediately
+    logout({ 
+      logoutParams: { 
+        returnTo: window.location.origin
+      } 
+    });
+  }, [navigate, logout]);
 
   return (
     <Layout>

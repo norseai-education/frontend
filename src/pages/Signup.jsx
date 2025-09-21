@@ -1,9 +1,9 @@
 
-import React from 'react';
-import { Box, Container, Typography } from '@mui/material';
+import React, { useEffect } from 'react';
+import { useAuth0 } from '@auth0/auth0-react';
+import { Box, Container, Typography, CircularProgress } from '@mui/material';
 import { styled } from '@mui/system';
-import Layout from '../components/Layout';
-import SignupButton from '../components/SignupButton';
+import Layout from '../components/HomeLayout';
 
 const StyledContainer = styled(Container)(({ theme }) => ({
   background: theme.palette.background.paper,
@@ -23,6 +23,16 @@ const Logo = styled(Typography)(({ theme }) => ({
 }));
 
 const Signup = () => {
+  const { loginWithRedirect } = useAuth0();
+
+  useEffect(() => {
+    // Automatically trigger Auth0 signup when page loads
+    // Auth0 handles both login and signup through the same loginWithRedirect
+    loginWithRedirect({
+        screen_hint: 'signup' 
+    });
+  }, [loginWithRedirect]);
+
   return (
     <Layout>
       <Box
@@ -37,9 +47,9 @@ const Signup = () => {
         <StyledContainer>
           <Logo variant="h1">NorseAI</Logo>
           <Typography variant="h6" sx={{ mb: 2, color: 'text.secondary' }}>
-            Create your account
+            Redirecting to signup...
           </Typography>
-          <SignupButton />
+          <CircularProgress />
         </StyledContainer>
       </Box>
     </Layout>
