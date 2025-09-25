@@ -24,6 +24,7 @@ import PlaceholderPage from './pages/PlaceholderPage';
 import Courses from './pages/Courses';
 import Analysis from './pages/Analysis';
 import Materials from './pages/Materials';
+import AuthCallback from './pages/AuthCallback'; // 1. Import the new component
 
 function App() {
   return (
@@ -52,6 +53,7 @@ function App() {
         <Route path="/materials" element={<Materials />} />
         <Route path="/courses" element={<Courses />} />
         <Route path="/analysis" element={<Analysis />} />
+        <Route path="/callback" element={<AuthCallback />} /> {/* 2. Add the callback route */}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
