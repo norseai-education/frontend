@@ -1,7 +1,7 @@
 // Example of how you could refactor to use axios
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8025';
+const API_BASE_URL = 'http://localhost:8000';
 
 // Create axios instance with default config
 const apiClient = axios.create({
@@ -36,10 +36,10 @@ apiClient.interceptors.response.use(
 );
 
 export class AssessmentAPI {
-  // Fetch assessment data
-  static async fetchAssessment(assessmentId = 1) {
+  // Fetch assessment questions
+  static async fetchAssessment() {
     try {
-      const response = await apiClient.get(`/assessments/${assessmentId}`);
+      const response = await apiClient.get('/questions');
       return response.data;
     } catch (error) {
       console.error('Error fetching assessment:', error);
@@ -48,18 +48,14 @@ export class AssessmentAPI {
   }
 
   // Submit assessment answers
-  static async submitAssessment(assessmentId, answers, timeTaken) {
+  static async submitAssessment(userId, answers) {
     try {
       const submission = {
-        assessment_id: assessmentId,
-        answers: answers.map((answer, index) => ({
-          question_id: index + 1,
-          selected_option: answer
-        })).filter(answer => answer.selected_option !== null),
-        time_taken: timeTaken
+        user_id: userId,
+        answers: answers
       };
 
-      const response = await apiClient.post(`/assessments/${assessmentId}/submit`, submission);
+      const response = await apiClient.post('/submit', submission);
       return response.data;
     } catch (error) {
       console.error('Error submitting assessment:', error);
@@ -67,13 +63,18 @@ export class AssessmentAPI {
     }
   }
 
-  // Get assessment problems
+  // Get assessment questions (alias for fetchAssessment)
   static async giveAssessment() {
+    return this.fetchAssessment();
+  }
+
+  // Get assessment result for a user
+  static async getAssessmentResult(userId) {
     try {
-      const response = await apiClient.get('/assessment/give_assessment');
+      const response = await apiClient.get(`/results/${userId}`);
       return response.data;
     } catch (error) {
-      console.error('Error fetching assessment problems:', error);
+      console.error('Error fetching assessment result:', error);
       throw error;
     }
   }
@@ -81,7 +82,7 @@ export class AssessmentAPI {
   // Health check
   static async healthCheck() {
     try {
-      const response = await apiClient.get('/health', { timeout: 2000 });
+      const response = await apiClient.get('/profiles/', { timeout: 2000 });
       return response.status === 200;
     } catch (error) {
       console.error('Health check failed:', error);

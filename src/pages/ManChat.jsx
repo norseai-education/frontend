@@ -221,9 +221,8 @@ const ChatSection = () => {
     <Paper
       elevation={3}
       sx={{
-        width: { xs: '95%', sm: 450 },
-        height: '85vh',
-        maxHeight: 650,
+        width: '100%',
+        height: 500, // Set a fixed height for embedding
         display: 'flex',
         flexDirection: 'column',
         borderRadius: '16px',
@@ -358,18 +357,7 @@ const ChatSection = () => {
 export default function MainChat() {
   return (
     <ThemeProvider theme={theme}>
-      <Box
-        sx={{
-          height: '100vh',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          bgcolor: 'background.default',
-          p: 2,
-        }}
-      >
-        <ChatSection />
-      </Box>
+      <ChatSection />
     </ThemeProvider>
   );
 }

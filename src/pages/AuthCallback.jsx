@@ -3,6 +3,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import { useNavigate } from 'react-router-dom';
 import { Box, CircularProgress, Typography, Container } from '@mui/material';
 import Layout from '../components/Layout';
+import { AssessmentAPI } from '../api/assessment'; // 1. Import the AssessmentAPI
 
 /**
  * A mock function to check the user's assessment status.
@@ -12,16 +13,21 @@ import Layout from '../components/Layout';
  */
 const checkAssessmentStatus = async (userId) => {
   console.log(`Checking assessment status for user: ${userId}`);
-  // --- START: REPLACE WITH YOUR API CALL ---
-  // Example:
-  // const response = await fetch(`https://your-api.com/user/${userId}/assessment-status`);
-  // const data = await response.json();
-  // return data.isComplete;
-  
-  // For demonstration, we'll return a random status.
-  // In a real app, this would be a consistent value from your database.
-  return Promise.resolve(Math.random() > 0.5);
-  // --- END: REPLACE WITH YOUR API CALL ---
+  try {
+    // Attempt to fetch the assessment result for the user.
+    await AssessmentAPI.getAssessmentResult(userId);
+    // If the request succeeds, it means an assessment exists.
+    return true;
+  } catch (error) {
+    // If the error is a 404, it means no assessment was found for the user.
+    if (error.response && error.response.status === 404) {
+      console.log(`No assessment found for user: ${userId}`);
+      return false;
+    }
+    // For any other errors, log them and assume no assessment.
+    console.error("An error occurred while checking assessment status:", error);
+    return false;
+  }
 };
 
 /**
@@ -37,12 +43,15 @@ const AuthCallback = () => {
     if (!isLoading && isAuthenticated && user) {
       const handleRedirect = async () => {
         try {
-          const hasCompletedAssessment = await checkAssessmentStatus(user.sub);
+          // The user ID from Auth0 is in the `sub` property.
+          // We will use a hardcoded UUID for now since the backend expects it.
+          const mockUserId = '00000000-0000-0000-0000-000000000000'; // Replace with real mapping
+          const hasCompletedAssessment = await checkAssessmentStatus(mockUserId);
           
           if (hasCompletedAssessment) {
             navigate('/dashboard');
           } else {
-            navigate('/assessment-dashboard'); // Or your assessment page
+            navigate('/cs-assessment'); // Or your assessment page
           }
         } catch (error) {
           console.error("Failed to check assessment status:", error);

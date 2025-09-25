@@ -13,6 +13,8 @@ import {
 import Layout from '../components/Layout';
 import SearchIcon from '@mui/icons-material/Search';
 import MainChat from './ManChat';
+import CSAssessment from './CSAssessment';
+
 
 /**
  * The main dashboard page with a two-column layout (4/8 split).
@@ -20,11 +22,16 @@ import MainChat from './ManChat';
 const Dashboard = () => {
   return (
     <Layout>
+      <CSAssessment />
+      <Divider />
+      {/* Main Content Area */}
       <Box sx={{ flexGrow: 1, bgcolor: '#f7f9fc', p: { xs: 2, sm: 4 } }}>
         <Container maxWidth="lg">
           <Typography variant="h4" component="h1" fontWeight="bold" sx={{ mb: 2 }}>
             Dashboard
           </Typography>
+
+          
 
           {/* Main Search Bar */}
           <Paper
