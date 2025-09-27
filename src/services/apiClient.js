@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Base API configuration
-const API_BASE_URL = 'http://localhost:8000'; // Updated to match FastAPI default port
+const API_BASE_URL = 'http://172.16.0.154:6700'; // Updated to match FastAPI default port
 
 // Create axios instance with default config
 const apiClient = axios.create({

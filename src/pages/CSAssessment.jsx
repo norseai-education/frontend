@@ -1,11 +1,45 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AppBar, Toolbar, Typography, Box, Grid, Drawer, List, ListItem, ListItemIcon, ListItemText, Button, Divider, Avatar, Card, CardContent } from '@mui/material';
 import { AccessTime, Psychology, BarChart, Person, Add, Subject, EmojiObjects, Insights, Dashboard as DashboardIcon } from '@mui/icons-material';
+import AssessmentService from '../services/assessmentService';
+import ChatService from '../services/chatService';
 
 const drawerWidth = 240;
 
 // The main CSAssessment component containing all the logic and UI
 const CSAssessment = () => {
+  const navigate = useNavigate();
+  const [user] = useState({ studentId: '13' }); // Mock user for now
+  const [error, setError] = useState('');
+
+  const startLesson = async () => {
+
+    try {
+      // Check if student needs assessment
+      const checkResult = await AssessmentService.checkNeedAssessment(user.studentId);
+      console.log(checkResult);
+      console.log(user.studentId);
+      
+      if (checkResult.give_assessment) {
+        // New student needs assessment
+        navigate('/assessment');
+      } else {
+        // Existing student, initialize chat session
+        try {
+          const init = await ChatService.initializeSession(user.studentId);
+          console.log(init);
+          navigate('/chat');
+        } catch (chatError) {
+          console.error('Failed to initialize chat session:', chatError);
+          setError('Failed to start lesson. Please try again.');
+        }
+      }
+    } catch (error) {
+      console.error('Error checking assessment:', error);
+    }
+  };
+  
   return (
     <Box sx={{ display: 'flex' }}>
       {/* Header */}
@@ -74,16 +108,16 @@ const CSAssessment = () => {
           <Divider sx={{ mb: 2 }} />
           <Typography variant="overline" color="text.secondary" sx={{ fontWeight: 'bold', mb: 1, display: 'block' }}>MY STUFF</Typography>
           <List>
-            <ListItem button sx={{ borderRadius: '8px', bgcolor: 'primary.light', color: 'primary.main', mb: 0.5 }}>
+            <ListItem sx={{ borderRadius: '8px', bgcolor: 'primary.light', color: 'primary.main', mb: 0.5, cursor: 'pointer' }}>
               <ListItemText primary="Courses" />
             </ListItem>
-            <ListItem button sx={{ borderRadius: '8px', mb: 0.5 }}>
+            <ListItem sx={{ borderRadius: '8px', mb: 0.5, cursor: 'pointer' }}>
               <ListItemText primary="Progress" />
             </ListItem>
-            <ListItem button sx={{ borderRadius: '8px', mb: 0.5 }}>
+            <ListItem sx={{ borderRadius: '8px', mb: 0.5, cursor: 'pointer' }}>
               <ListItemText primary="Profile" />
             </ListItem>
-            <ListItem button sx={{ borderRadius: '8px', mb: 0.5 }}>
+            <ListItem sx={{ borderRadius: '8px', mb: 0.5, cursor: 'pointer' }}>
               <ListItemText primary="Teachers" />
             </ListItem>
           </List>
@@ -138,7 +172,12 @@ const CSAssessment = () => {
                       <ListItemIcon sx={{ minWidth: 32, mt: 0.5 }}><Box component="span" sx={{ fontSize: '1.2rem' }}>{item.icon}</Box></ListItemIcon>
                       <ListItemText primary={item.text} sx={{ '& .MuiListItemText-primary': { fontWeight: 'medium' } }} />
                       {index === 0 && (
-                        <Button variant="contained" size="small" sx={{ ml: 2, bgcolor: '#2196f3', textTransform: 'none', borderRadius: '50px', whiteSpace: 'nowrap' }}>
+                        <Button 
+                          variant="contained" 
+                          size="small" 
+                          onClick={startLesson}
+                          sx={{ ml: 2, bgcolor: '#2196f3', textTransform: 'none', borderRadius: '50px', whiteSpace: 'nowrap' }}
+                        >
                           Start
                         </Button>
                       )}
