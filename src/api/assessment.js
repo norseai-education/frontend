@@ -1,7 +1,7 @@
 // Example of how you could refactor to use axios
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8025';
+const API_BASE_URL = 'http://172.16.0.154:6700';
 
 // Create axios instance with default config
 const apiClient = axios.create({

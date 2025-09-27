@@ -5,15 +5,10 @@ import AssessmentService from '../../services/assessmentService';
 import ChatService from '../../services/chatService';
 
 const cardData = [
-  { title: 'AMC 8', content: 'View and manage student assessments.', button: 'Start Lesson' },
-  { title: 'CS Assessments', content: 'Manage user accounts and roles.', path: '/cs-assessment', button: 'Start Lesson' },
-  { title: 'Analytics Assessments', content: 'Visualize platform usage and statistics.', path: '/analytics-assessment', button: 'Start Lesson' },
-  { title: 'Geometry Assessments', content: 'Create and edit educational content.', path: '/geometry-assessment', button: 'Start Lesson' },
-  { title: 'Machine Assessments', content: 'Configure application settings.', path: '/machine-learning-assessment', button: 'Start Lesson' },
-  { title: 'Deep Learning Assessments', content: 'Generate and view reports.', path: '/deep-learning-assessment', button: 'Start Lesson' },
-  { title: 'Chat', content: 'Monitor and manage chat interactions.', path: '/chat', button: 'Start Lesson' },
-  { title: 'System Health', content: 'Check the status of system services.', path: '/admin', button: 'Start Lesson' },
-];
+  { title: 'AMC 8', content: 'View and manage student assessments.', button: 'Start Lesson' }];
+
+const user = { studentId: '13' };
+
 
 const DashboardDisplay = () => {
   const navigate = useNavigate();
