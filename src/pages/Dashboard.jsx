@@ -14,6 +14,7 @@ import Layout from '../components/Layout';
 import SearchIcon from '@mui/icons-material/Search';
 import MainChat from './ManChat';
 import CSAssessment from './CSAssessment';
+import ChatIntroduction from './Chat_introduction';
 
 
 /**
@@ -83,6 +84,7 @@ const Dashboard = () => {
                       A list of quizzes or assessments can be displayed here.
                     </Typography>
                     <MainChat />
+                 
                   </Box>
                   <Box sx={{ p: { xs: 2, md: 3 } }}>
                     <Typography variant="h6" gutterBottom>
@@ -98,6 +100,7 @@ const Dashboard = () => {
           </Paper>
         </Container>
       </Box>
+      <ChatIntroduction />
     </Layout>
   );
 };
