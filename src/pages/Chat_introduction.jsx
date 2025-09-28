@@ -2,12 +2,9 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { BookOpen, MessageSquare, Send, Bot, Loader2 } from 'lucide-react';
 
 // --- Environment Variables ---
-// These global variables are provided by the canvas environment.
-const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+const appId = typeof window !== 'undefined' && window.__app_id !== undefined ? window.__app_id : 'default-app-id';
 
 // --- Dummy Conversation Flow (Simulates API Responses) ---
-// This local JSON structure allows interaction without an API key.
-// Responses are triggered by keywords in the user's input.
 const DUMMY_CONVERSATION_FLOW = [
     {
         keywords: ['history', 'french revolution', 'revolution', 'world war'],
@@ -36,7 +33,6 @@ const DEFAULT_RESPONSE = {
     followup: 'What is the specific topic or question you need help with in your current academic subject?',
 };
 
-
 const INITIAL_MESSAGE = {
     role: 'model',
     text: "Hello! I am Profe AI, your academic tutor. I'm running on a dummy data file, so please ask about **History, Math, Science, or Economics** to see a simulated answer!",
@@ -60,7 +56,7 @@ const ChatIntroduction = () => {
         if (!input.trim() || isLoading) return;
 
         const userText = input.trim().toLowerCase();
-        const userMessage = { role: 'user', text: input.trim() }; // Keep original casing for display
+        const userMessage = { role: 'user', text: input.trim() }; 
         
         setMessages(prev => [...prev, userMessage]);
         setInput('');
@@ -70,18 +66,14 @@ const ChatIntroduction = () => {
         await new Promise(resolve => setTimeout(resolve, 800));
 
         // --- Dummy JSON Logic ---
-        
-        // Find a matching response based on keywords
         let matchingFlow = DUMMY_CONVERSATION_FLOW.find(flow =>
             flow.keywords.some(keyword => userText.includes(keyword))
         );
 
-        // Use default response if no keywords match
         if (!matchingFlow) {
             matchingFlow = DEFAULT_RESPONSE;
         }
 
-        // Combine the main response and the follow-up question
         const combinedText = `${matchingFlow.response}\n\n*${matchingFlow.followup}*`;
 
         const aiMessage = { role: 'model', text: combinedText };
@@ -92,23 +84,21 @@ const ChatIntroduction = () => {
     }, [input, isLoading]);
 
 
-    // Component to render a single message (Sources display logic removed)
+    // Component to render a single message
     const Message = ({ message }) => {
         const isUser = message.role === 'user';
-        const roleIcon = isUser ? <MessageSquare className="w-5 h-5" /> : <Bot className="w-5 h-5" />;
-        // Adjusted colors for a cleaner MUI-Primary feel
-        const bgColor = isUser ? 'bg-indigo-600 text-white shadow-lg' : 'bg-gray-50 text-gray-800 shadow-md border border-gray-100';
-        const alignment = isUser ? 'self-end' : 'self-start';
-        const corner = isUser ? 'rounded-br-none' : 'rounded-bl-none';
+        const roleIcon = isUser ? <MessageSquare className="message-icon" /> : <Bot className="message-icon" />;
+        
+        // Use pure CSS classes for styling and alignment
+        const messageClass = isUser ? 'user-message' : 'ai-message';
 
         return (
-            <div className={`flex flex-col max-w-4/5 md:max-w-3/4 mb-4 ${alignment}`}>
-                <div className={`flex items-start p-4 rounded-xl ${bgColor} ${corner} transition-shadow duration-300`}>
-                    <div className={`mr-3 ${isUser ? 'order-2 ml-2' : 'order-1 mr-2'} flex-shrink-0`}>
+            <div className={`message-wrapper ${isUser ? 'align-right' : 'align-left'}`}>
+                <div className={`message-box ${messageClass}`}>
+                    <div className={`icon-container ${isUser ? 'user-icon' : 'ai-icon'}`}>
                         {roleIcon}
                     </div>
-                    {/* Render LaTeX for Math/Science (uses $...$ or $$...$$) */}
-                    <p className={`text-sm leading-relaxed ${isUser ? 'order-1' : 'order-2'}`}>
+                    <p className="message-text">
                         {message.text}
                     </p>
                 </div>
@@ -117,68 +107,260 @@ const ChatIntroduction = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-100 font-sans flex flex-col items-center p-4">
-            <script src="https://cdn.tailwindcss.com"></script>
-            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet" />
+        <div className="app-container">
+            {/* Pure CSS Block to simulate MUI styles */}
+            <style>
+            {`
+                :root {
+                    --mui-primary: #3f51b5; /* Indigo 500 */
+                    --mui-primary-dark: #303f9f; /* Indigo 700 */
+                    --mui-surface: #ffffff;
+                    --mui-background: #f4f5f7;
+                    --mui-shadow-low: 0px 2px 4px rgba(0, 0, 0, 0.1); /* Elevation 1 */
+                    --mui-shadow-high: 0px 8px 16px rgba(0, 0, 0, 0.2); /* Elevation 8 */
+                    font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+                }
 
-            {/* Tailwind Config for Inter font */}
-            <style>{`
-                :root { font-family: 'Inter', sans-serif; }
-                .chat-container {
+                .app-container {
+                    min-height: 100vh;
+                    background-color: var(--mui-background);
                     display: flex;
                     flex-direction: column;
-                    height: 90vh; /* Set height for fixed chat window */
+                    align-items: center;
+                    padding: 20px;
                 }
-            `}</style>
 
-            {/* Main Chat Card (MUI Paper Simulation - High Elevation) */}
-            <div className="w-full max-w-4xl bg-white shadow-2xl rounded-xl overflow-hidden chat-container transition-shadow duration-300">
-                {/* Header (MUI AppBar Simulation - Primary Color) */}
-                <header className="flex items-center justify-center p-4 bg-indigo-700 text-white shadow-xl flex-shrink-0">
-                    <BookOpen className="w-6 h-6 mr-3" />
-                    <h1 className="text-xl font-bold tracking-tight">Profe AI: Academic Tutor (Dummy Mode)</h1>
+                .chat-container {
+                    width: 100%;
+                    max-width: 900px;
+                    background-color: var(--mui-surface);
+                    box-shadow: var(--mui-shadow-high); /* MUI Paper Elevation */
+                    border-radius: 8px;
+                    overflow: hidden;
+                    display: flex;
+                    flex-direction: column;
+                    height: 90vh;
+                }
+
+                /* Header (MUI AppBar Simulation) */
+                .chat-app-bar {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 16px;
+                    background-color: var(--mui-primary-dark);
+                    color: white;
+                    box-shadow: var(--mui-shadow-low);
+                    flex-shrink: 0;
+                }
+
+                .app-title {
+                    font-size: 20px;
+                    font-weight: 700;
+                    letter-spacing: 0.5px;
+                    margin-left: 12px;
+                }
+
+                /* Message Area */
+                .message-area {
+                    flex-grow: 1;
+                    overflow-y: auto;
+                    padding: 24px;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 16px;
+                }
+
+                /* Message Styles */
+                .message-wrapper {
+                    display: flex;
+                    width: 100%;
+                }
+
+                .align-right {
+                    justify-content: flex-end;
+                }
+                .align-left {
+                    justify-content: flex-start;
+                }
+
+                .message-box {
+                    display: flex;
+                    align-items: flex-start;
+                    padding: 12px 16px;
+                    border-radius: 20px;
+                    max-width: 70%;
+                    box-shadow: var(--mui-shadow-low);
+                }
+
+                .user-message {
+                    background-color: var(--mui-primary);
+                    color: white;
+                    border-top-right-radius: 4px; /* Simulating one square corner */
+                    order: 2; /* Move icon to the right */
+                }
+
+                .ai-message {
+                    background-color: #e8eaf6; /* Light Indigo background */
+                    color: #424242;
+                    border-top-left-radius: 4px;
+                    border: 1px solid #c5cae9;
+                }
+
+                .message-icon {
+                    width: 20px;
+                    height: 20px;
+                    flex-shrink: 0;
+                }
+                
+                .icon-container {
+                    margin-right: 8px;
+                    order: 1;
+                }
+
+                .user-icon {
+                    margin-left: 8px;
+                    margin-right: 0;
+                    order: 2;
+                }
+
+                .message-text {
+                    font-size: 14px;
+                    line-height: 1.5;
+                    white-space: pre-wrap;
+                    order: 2;
+                }
+                .user-icon + .message-text {
+                    order: 1;
+                }
+
+                /* Loading Indicator */
+                .loading-indicator {
+                    display: flex;
+                    align-items: center;
+                    padding: 12px;
+                    max-width: 250px;
+                    background-color: #f0f0f0;
+                    border-radius: 12px;
+                    box-shadow: var(--mui-shadow-low);
+                }
+
+                .loading-icon {
+                    width: 18px;
+                    height: 18px;
+                    margin-right: 8px;
+                    color: var(--mui-primary);
+                    animation: spin 1s linear infinite;
+                }
+
+                /* Input Area (MUI TextField/Button Simulation) */
+                .input-area {
+                    padding: 16px;
+                    background-color: var(--mui-surface);
+                    border-top: 1px solid #e0e0e0;
+                    display: flex;
+                    align-items: center;
+                    flex-shrink: 0;
+                }
+
+                .input-field {
+                    flex-grow: 1;
+                    padding: 12px 20px;
+                    border: 1px solid #bdbdbd; /* Light gray border */
+                    border-radius: 25px; /* Fully rounded */
+                    font-size: 16px;
+                    transition: border-color 0.2s, box-shadow 0.2s;
+                    margin-right: 8px;
+                    outline: none;
+                }
+
+                .input-field:focus {
+                    border-color: var(--mui-primary);
+                    box-shadow: 0 0 0 2px rgba(63, 81, 181, 0.4); /* MUI focus ring */
+                }
+
+                .send-button {
+                    padding: 12px;
+                    background-color: var(--mui-primary);
+                    color: white;
+                    border: none;
+                    border-radius: 50%;
+                    cursor: pointer;
+                    box-shadow: var(--mui-shadow-low);
+                    transition: background-color 0.2s, box-shadow 0.2s;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+
+                .send-button:hover:not(:disabled) {
+                    background-color: var(--mui-primary-dark);
+                    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+                }
+
+                .send-button:disabled {
+                    background-color: #c5cae9;
+                    cursor: not-allowed;
+                    box-shadow: none;
+                }
+
+                /* Animation for Loader */
+                @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+            `}
+            </style>
+
+            <div className="chat-container">
+                {/* Header (MUI AppBar Simulation) */}
+                <header className="chat-app-bar">
+                    <BookOpen className="message-icon" />
+                    <h1 className="app-title">Profe AI: Academic Tutor (Dummy Mode)</h1>
                 </header>
 
                 {/* Message Display Area (MUI List/Paper content) */}
-                <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 bg-white">
+                <div className="message-area">
                     {messages.map((msg, index) => (
                         <Message key={index} message={msg} />
                     ))}
                     {/* Typing/Loading Indicator */}
                     {isLoading && (
-                        <div className="self-start flex items-center p-3 max-w-xs bg-gray-100 rounded-xl rounded-bl-none shadow-md border border-gray-100">
-                            <Loader2 className="w-4 h-4 mr-2 text-indigo-500 animate-spin" />
-                            <span className="text-sm text-gray-600">Profe AI is looking up the answer...</span>
+                        <div className="message-wrapper align-left">
+                            <div className="loading-indicator">
+                                <Loader2 className="loading-icon" />
+                                <span style={{ fontSize: '14px', color: '#616161' }}>Profe AI is looking up the answer...</span>
+                            </div>
                         </div>
                     )}
                     <div ref={messagesEndRef} />
                 </div>
 
                 {/* Input Area (MUI TextField/Paper Simulation) */}
-                <form onSubmit={handleSendMessage} className="p-4 bg-gray-50 border-t border-gray-200 flex items-center flex-shrink-0">
+                <form onSubmit={handleSendMessage} className="input-area">
                     <input
                         type="text"
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         placeholder="Ask about History, Math, Science, or Economics..."
-                        className="flex-1 p-3 border border-gray-300 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 text-sm placeholder-gray-500 shadow-inner mr-2"
+                        className="input-field"
                         disabled={isLoading}
                     />
                     <button
                         type="submit"
                         disabled={!input.trim() || isLoading}
-                        className="p-3 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 disabled:bg-indigo-300 transition duration-150 shadow-md hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-indigo-500 focus:ring-opacity-50"
+                        className="send-button"
                         aria-label="Send message"
                     >
                         {isLoading ? (
-                            <Loader2 className="w-5 h-5 animate-spin" />
+                            <Loader2 style={{ width: '20px', height: '20px' }} />
                         ) : (
-                            <Send className="w-5 h-5" />
+                            <Send style={{ width: '20px', height: '20px' }} />
                         )}
                     </button>
                 </form>
             </div>
-            <div className='mt-2 text-xs text-gray-400'>
+            <div style={{ marginTop: '8px', fontSize: '12px', color: '#9e9e9e' }}>
                 App ID: {appId}
             </div>
         </div>

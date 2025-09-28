@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AppBar, Toolbar, Typography, Box, Grid, Drawer, List, ListItem, ListItemIcon, ListItemText, Button, Divider, Avatar, Card, CardContent } from '@mui/material';
-import { AccessTime, Psychology, BarChart, Person, Add, Subject, EmojiObjects, Insights, Dashboard as DashboardIcon } from '@mui/icons-material';
+import { 
+  AppBar, Toolbar, Typography, Box, Grid, Drawer, List, ListItem, ListItemIcon, 
+  ListItemText, Button, Divider, Avatar, Card, CardContent, CircularProgress 
+} from '@mui/material';
+import { AccessTime, Psychology, BarChart, Add, Subject, EmojiObjects, Insights, Dashboard as DashboardIcon } from '@mui/icons-material';
+import { useAuth0 } from '@auth0/auth0-react';
 import AssessmentService from '../services/assessmentService';
 import ChatService from '../services/chatService';
 
@@ -9,36 +13,53 @@ const drawerWidth = 240;
 
 // The main CSAssessment component containing all the logic and UI
 const CSAssessment = () => {
-  const navigate = useNavigate();
-  const [user] = useState({ studentId: '13' }); // Mock user for now
+  const navigate = useNavigate(); // 2. Initialize the navigate function
+  const { user, isAuthenticated, isLoading } = useAuth0();
   const [error, setError] = useState('');
 
+  // 3. Create a handler to navigate to the Math Assessment page
+
   const startLesson = async () => {
+    // Ensure user is authenticated before making API calls
+    if (!isAuthenticated || !user) {
+      setError("You must be logged in to start a lesson.");
+      return;
+    }
+    setError(''); // Clear previous errors
 
     try {
-      // Check if student needs assessment
-      const checkResult = await AssessmentService.checkNeedAssessment(user.studentId);
+      // Use the user's unique ID from Auth0 (user.sub)
+      const checkResult = await AssessmentService.checkNeedAssessment(user.sub);
       console.log(checkResult);
-      console.log(user.studentId);
+      console.log(user.sub);
       
       if (checkResult.give_assessment) {
         // New student needs assessment
-        navigate('/assessment');
+        navigate('/math-assessment'); // Navigate to the assessment page
       } else {
         // Existing student, initialize chat session
         try {
-          const init = await ChatService.initializeSession(user.studentId);
-          console.log(init);
-          navigate('/chat');
+          await ChatService.initializeSession(user.sub);
+          navigate('/chat'); // Navigate to the chat page
         } catch (chatError) {
           console.error('Failed to initialize chat session:', chatError);
-          setError('Failed to start lesson. Please try again.');
+          setError('Failed to start the lesson. Please try again later.');
         }
       }
-    } catch (error) {
-      console.error('Error checking assessment:', error);
+    } catch (apiError) {
+      console.error('Error checking assessment status:', apiError);
+      setError('Could not connect to the server. Please check your connection.');
     }
   };
+
+  // Show a loading spinner while Auth0 is initializing
+  if (isLoading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
   
   return (
     <Box sx={{ display: 'flex' }}>
@@ -152,21 +173,29 @@ const CSAssessment = () => {
             </Button>
           </Box>
           
+          {/* Display error message if exists */}
+          {error && (
+            <Box sx={{ mb: 2 }}>
+              <Typography color="error" variant="body2">{error}</Typography>
+            </Box>
+          )}
+
           <Grid container spacing={4}>
             {/* Course Section */}
             <Grid item xs={12} sm={6} md={4}>
               <Card elevation={0} sx={{ borderRadius: '8px', p: 2, border: '1px solid #e0e0e0' }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                  <Typography variant="subtitle1" sx={{ fontWeight: 'semibold' }}>AP®/College Calculus BC</Typography>
-                  <Typography variant="caption" color="primary" sx={{ cursor: 'pointer' }}>See all (12)</Typography>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 'semibold' }}>AMC 8 Topics</Typography>
+                  <Typography variant="caption" color="primary" sx={{ cursor: 'pointer' }}>See all (6)</Typography>
                 </Box>
                 <List dense disablePadding>
                   {[
-                    { text: 'Limits and continuity', icon: <Insights /> },
-                    { text: 'Differentiation: definition and basic derivative rules', icon: <BarChart /> },
-                    { text: 'Differentiation: composite, implicit, and inverse functions', icon: <DashboardIcon /> },
-                    { text: 'Contextual applications of differentiation', icon: <Subject /> },
-                    { text: 'Applying derivatives to analyze functions', icon: <EmojiObjects /> },
+                    { text: 'Arithmetic', icon: <Insights /> },
+                    { text: 'Algebra', icon: <BarChart /> },
+                    { text: 'Geometry', icon: <DashboardIcon /> },
+                    { text: 'Number Theory', icon: <Subject /> },
+                    { text: 'Counting and Probability', icon: <EmojiObjects /> },
+                    { text: 'Logic', icon: <Psychology /> },
                   ].map((item, index) => (
                     <ListItem key={index} disableGutters sx={{ alignItems: 'flex-start', mb: 1 }}>
                       <ListItemIcon sx={{ minWidth: 32, mt: 0.5 }}><Box component="span" sx={{ fontSize: '1.2rem' }}>{item.icon}</Box></ListItemIcon>
