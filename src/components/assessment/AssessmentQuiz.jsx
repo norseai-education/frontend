@@ -22,12 +22,12 @@ import {
 import { useNavigate } from 'react-router-dom';
 import AssessmentService from '../../services/assessmentService';
 import ChatService from '../../services/chatService';
-import { useAuth } from '../../contexts/AuthContext';
+// import { useAuth } from '../../contexts/AuthContext';
 
 const AssessmentQuiz = () => {
   const theme = useTheme();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const user = { studentId: '13' };
 
   // Assessment state
   const [assessment, setAssessment] = useState(null);

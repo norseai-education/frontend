@@ -1,8 +1,8 @@
 import React from 'react';
 import AssessmentQuiz from './AssessmentQuiz';
 
-const Assessment = () => {
+const AssessmentDisplay = () => {
   return <AssessmentQuiz />;
 };
 
-export default Assessment;
+export default AssessmentDisplay;
