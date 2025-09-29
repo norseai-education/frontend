@@ -93,6 +93,36 @@ class ChatService {
   }
 
   /**
+   * Send message with streaming response
+   * @param {number} studentId - Student's ID
+   * @param {string} message - User's message
+   * @param {function} onChunk - Callback function for each chunk received
+   * @returns {Promise<void>}
+   */
+  // static async sendMessageStream(studentId, message, onChunk) {
+  //   try {
+  //     const response = await apiClient.post(`/chat/s/${studentId}`);
+  //       method: 'POST',
+  //       headers: { 'Content-Type': 'application/json' },
+  //       body: JSON.stringify({ student_id: studentId, message: message }),
+  //     });
+
+  //     const reader = response.body.getReader();
+  //     const decoder = new TextDecoder();
+
+  //     while (true) {
+  //       const { value, done } = await reader.read();
+  //       if (done) break;
+  //       const chunk = decoder.decode(value);
+  //       onChunk(chunk);
+  //     }
+  //   } catch (error) {
+  //     console.error('Streaming error:', error);
+  //     throw error;
+  //   }
+  // }
+
+  /**
    * Health check for chat service
    * @returns {Promise<boolean>}
    */

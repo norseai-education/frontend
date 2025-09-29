@@ -27,7 +27,7 @@ import ChatService from '../../services/chatService';
 const AssessmentQuiz = () => {
   const theme = useTheme();
   const navigate = useNavigate();
-  const user = { studentId: '13' };
+  const user = { studentId: '27' };
 
   // Assessment state
   const [assessment, setAssessment] = useState(null);

@@ -7,7 +7,7 @@ import ChatService from '../../services/chatService';
 const cardData = [
   { title: 'AMC 8', content: 'View and manage student assessments.', button: 'Start Lesson' }];
 
-const user = { studentId: '13' };
+const user = { studentId: '27' };
 
 
 const DashboardDisplay = () => {
