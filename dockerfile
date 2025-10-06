@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package.json package-lock.json* ./
 
 # Debug: List files to verify package.json exists
-RUN ls -la
+# RUN ls -la
 
 # Install all dependencies (including dev dependencies)
 RUN npm install
@@ -17,7 +17,7 @@ RUN npm install
 COPY . .
 
 # Debug: List files after copying source
-RUN ls -la
+# RUN ls -la
 
 # Expose port 5173 (Vite's default dev server port)
 EXPOSE 5173
