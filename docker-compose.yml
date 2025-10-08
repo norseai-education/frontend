@@ -1,19 +1,36 @@
-version: '3.8'
-
+version: "3.8"
 services:
-  app:
-    build: .
-    ports:
-      - "5173:5173"
-    environment:
-      - NODE_ENV=development
-    # volumes:
-    #   - .:/app
-    #   - /app/node_modules
+  norseai-frontend:
+    #image: your-frontend-image  # or use build context
+    #container_name: norseai-frontend
     restart: unless-stopped
     networks:
-      - frontend-network
+      - traefik-public
+      - norseai
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.norseai-frontend.rule=Host(`norseai.sunshinek12.com`)"
+      - "traefik.http.routers.norseai-frontend.entrypoints=websecure"
+      - "traefik.http.routers.norseai-frontend.tls=true"
+      - "traefik.http.routers.norseai-frontend.tls.certresolver=letsencrypt"
+      - "traefik.http.services.norseai-frontend.loadbalancer.server.port=5173"
+      # Security headers
+      - "traefik.http.middlewares.norseai-security.headers.sslredirect=true"
+      - "traefik.http.middlewares.norseai-security.headers.stsseconds=31536000"
+      - "traefik.http.middlewares.norseai-security.headers.stsincludesubdomains=true"
+      - "traefik.http.middlewares.norseai-security.headers.stspreload=true"
+      - "traefik.http.routers.norseai-frontend.middlewares=norseai-security"
+    environment:
+      - BACKEND_URL=http://dev-backend:6700  # Internal HTTP communication
+      - NODE_ENV=production
+    # Optional: build from GitHub
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile.frontend
 
 networks:
-  frontend-network:
+  traefik-public:
     external: true
+  norseai:
+    external: true  # Same network as backend
+    
