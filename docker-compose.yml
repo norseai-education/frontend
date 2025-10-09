@@ -4,7 +4,7 @@ services:
     build:
       context: .
       dockerfile: dockerfile
-    container_name: dev-frontend-norseai-frontend      
+    container_name: norseai-frontend      
     restart: unless-stopped
     ports:
       - "5173:5173"
