@@ -18,6 +18,13 @@ services:
       - "traefik.http.routers.norseai-frontend.tls=true"
       - "traefik.http.routers.norseai-frontend.tls.certresolver=letsencrypt"
       - "traefik.http.services.norseai-frontend.loadbalancer.server.port=5173"
+      # Add middleware for headers
+      - "traefik.http.routers.norseai-frontend.middlewares=norseai-headers"
+      - "traefik.http.middlewares.norseai-headers.headers.customrequestheaders.X-Forwarded-Proto=https"
+      - "traefik.http.middlewares.norseai-headers.headers.customrequestheaders.X-Forwarded-Host=norseai.sunshinek12.com"
+      # Add health check
+      - "traefik.http.services.norseai-frontend.loadbalancer.healthcheck.path=/"
+      - "traefik.http.services.norseai-frontend.loadbalancer.healthcheck.interval=10s"      
     environment:
       - BACKEND_URL=http://norseai-backend:6700  # Internal HTTP communication
       - NODE_ENV=production
