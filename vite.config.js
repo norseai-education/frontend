@@ -10,7 +10,8 @@ export default defineConfig({
     allowedHosts: [
       'norseai.sunshinek12.com',
       'www.norseai.sunshinek12.com',
-      'localhost'
+      'localhost',
+      'dev-frontend-norseai-frontend'
     ]
   }
 })
