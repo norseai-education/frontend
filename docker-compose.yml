@@ -1,8 +1,9 @@
 version: "3.8"
 services:
   norseai-frontend:
-    #image: your-frontend-image  # or use build context
-    # container_name: norseai-frontend
+    build:
+      context: .
+      dockerfile: dockerfile
     restart: unless-stopped
     networks:
       - traefik-public
