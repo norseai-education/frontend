@@ -22,10 +22,6 @@ services:
       - BACKEND_URL=http://norseai-backend:6700  # Internal HTTP communication
       - NODE_ENV=production
       - VITE_API_URL=http://norseai-backend:6700  # If using Vite env vars
-    # Optional: build from GitHub
-    # build:
-    #   context: .
-    #   dockerfile: Dockerfile.frontend
 
 networks:
   traefik-public:
