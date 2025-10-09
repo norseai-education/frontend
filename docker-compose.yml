@@ -4,23 +4,18 @@ services:
     build:
       context: .
       dockerfile: dockerfile
+    container_name: dev-frontend-norseai-frontend      
     restart: unless-stopped
     networks:
       - traefik-public
       - norseai
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.norseai-frontend.rule=Host(`norseai.sunshinek12.com`)"
-      - "traefik.http.routers.norseai-frontend.entrypoints=websecure"
-      - "traefik.http.routers.norseai-frontend.tls=true"
-      - "traefik.http.routers.norseai-frontend.tls.certresolver=letsencrypt"
-      - "traefik.http.services.norseai-frontend.loadbalancer.server.port=5173"
-      # Security headers
-      - "traefik.http.middlewares.norseai-security.headers.sslredirect=true"
-      - "traefik.http.middlewares.norseai-security.headers.stsseconds=31536000"
-      - "traefik.http.middlewares.norseai-security.headers.stsincludesubdomains=true"
-      - "traefik.http.middlewares.norseai-security.headers.stspreload=true"
-      - "traefik.http.routers.norseai-frontend.middlewares=norseai-security"
+      - "traefik.http.routers.norseai.rule=Host(`norseai.sunshinek12.com`)"
+      - "traefik.http.routers.norseai.entrypoints=websecure"
+      - "traefik.http.routers.norseai.tls=true"
+      - "traefik.http.routers.norseai.tls.certresolver=letsencrypt"
+      - "traefik.http.services.norseai.loadbalancer.server.port=5173"
     environment:
       - BACKEND_URL=http://dev-backend:6700  # Internal HTTP communication
       - NODE_ENV=production
