@@ -11,7 +11,7 @@ export default defineConfig({
       'norseai.sunshinek12.com',
       'www.norseai.sunshinek12.com',
       'localhost',
-      'dev-frontend-norseai-frontend'
+      'norseai-frontend'
     ]
   }
 })
