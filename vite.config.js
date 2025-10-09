@@ -12,6 +12,8 @@ export default defineConfig({
     allowedHosts: [
       'norseai.sunshinek12.com',
       'www.norseai.sunshinek12.com',
+      'napi.sunshinek12.com',
+      'www.napi.sunshinek12.com',      
       'localhost',
       'norseai-frontend'
     ]
