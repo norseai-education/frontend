@@ -20,14 +20,18 @@ import {
   Timer as TimerIcon 
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import { useAuth0 } from '@auth0/auth0-react';
 import AssessmentService from '../../services/assessmentService';
 import ChatService from '../../services/chatService';
-// import { useAuth } from '../../contexts/AuthContext';
+import UserService from '../../services/userService';
 
 const AssessmentQuiz = () => {
   const theme = useTheme();
   const navigate = useNavigate();
-  const user = { studentId: '27' };
+  const { user } = useAuth0();
+
+  // User state
+  const [studentId, setStudentId] = useState(null);
 
   // Assessment state
   const [assessment, setAssessment] = useState(null);
@@ -122,8 +126,26 @@ const AssessmentQuiz = () => {
   const [userGraph, setUserGraph] = useState(null);
 
   useEffect(() => {
-    loadAssessment();
-  }, []);
+    const fetchStudentId = async () => {
+      if (user?.email) {
+        try {
+          const id = await UserService.getStudentId(user.email);
+          setStudentId(id);
+        } catch (err) {
+          console.error('Error fetching student ID:', err);
+          setError('Failed to load user information.');
+        }
+      }
+    };
+    
+    fetchStudentId();
+  }, [user]);
+
+  useEffect(() => {
+    if (studentId) {
+      loadAssessment();
+    }
+  }, [studentId]);
 
   useEffect(() => {
     // Track time spent on each question
@@ -197,7 +219,7 @@ const AssessmentQuiz = () => {
       console.log(studentAnswers);
 
       // Store the assessment
-      const storeResult = await AssessmentService.storeAssessment(user.studentId, studentAnswers);
+      const storeResult = await AssessmentService.storeAssessment(studentId, studentAnswers);
 
       console.log(storeResult);
       
@@ -237,7 +259,7 @@ const AssessmentQuiz = () => {
   const handleContinue = async () => {
     try {
       // Initialize chat session and redirect
-      await ChatService.initializeSession(user.studentId, userGraph.userGraph);
+      await ChatService.initializeSession(studentId, userGraph.userGraph);
       navigate('/chat');
     } catch (err) {
       console.error('Error initializing chat:', err);

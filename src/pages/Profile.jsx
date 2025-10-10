@@ -66,33 +66,6 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    // Simulate fetching user data from an API
-    const fetchUserData = () => {
-      setLoading(true);
-      setTimeout(() => {
-        try {
-          // Dummy user data, simulating a successful API response
-          const dummyUser = {
-            name: 'John Doe',
-            email: 'john.doe@example.com',
-            avatar: '/static/images/avatar/1.jpg',
-            bio: 'Software developer and AI enthusiast. Passionate about creating innovative solutions.',
-            memberSince: 'January 2023',
-          };
-          setUser(dummyUser);
-          setError(null);
-        } catch (error) {
-          console.error("Failed to fetch user data:", error);
-          setError('Failed to fetch user profile. Please try again later.');
-        } finally {
-          setLoading(false);
-        }
-      }, 1500); // Simulate a 1.5-second network delay
-    };
-
-    fetchUserData();
-  }, []);
 
   // Add tab state and handler
   const [value, setValue] = useState('1');
