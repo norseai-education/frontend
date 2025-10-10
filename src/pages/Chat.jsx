@@ -19,12 +19,17 @@ import {
   ExitToApp as ExitIcon
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import { useAuth0 } from '@auth0/auth0-react';
 import Layout from '../components/Layout';
-// import { useAuth } from '../contexts/AuthContext';
 import ChatService from '../services/chatService';
+import UserService from '../services/userService';
 
 // Main Chat component which can be used inside a larger application
 const Chat = () => {
+  const theme = useTheme();
+  const navigate = useNavigate();
+  const { user } = useAuth0();
+  
   // State for the chat messages, stored as an array of objects
   const [messages, setMessages] = useState([]);
   // State to manage the user's input text
@@ -35,44 +40,29 @@ const Chat = () => {
   const [isStreaming, setIsStreaming] = useState(false);
   // State to hold the current user's ID
   const [studentId, setStudentId] = useState(null);
+  // Error state
+  const [error, setError] = useState('');
 
   // Ref to automatically scroll the chatbox to the bottom when new messages arrive
   const chatBoxRef = useRef(null);
+  const messagesEndRef = useRef(null);
 
-  // useEffect to handle initial setup and checks
+  // Fetch student ID from user email
   useEffect(() => {
-    // const student = localStorage.getItem('student_id');
-    // if (!student) {
-    //   setStatus('Student not found. Redirecting to home...');
-    //   setTimeout(() => {
-    //     window.location.assign('/');
-    //   }, 2000);
-    //   return;
-    // }
-    const student = "27";
-    setStudentId(student);
-    setStatus('Connected');
-
-    // Interval to periodically check the chat status
-  //   const statusCheckInterval = setInterval(async () => {
-  //     if (isStreaming || !student) return;
-  //     try {
-  //       const response = await fetch(`/chat/status/${student}`);
-  //       if (response.ok) {
-  //         const statusData = await response.json();
-  //         if (statusData.active) {
-  //           const msgCount = statusData.message_count || 0;
-  //           setStatus(`Connected (${msgCount} messages)`);
-  //         }
-  //       }
-  //     } catch (e) {
-  //       console.error('Connection check failed:', e);
-  //     }
-  //   }, 30000); // Check every 30 seconds
-
-  //   // Cleanup function to clear the interval when the component unmounts
-  //   return () => clearInterval(statusCheckInterval);
-   }, [isStreaming, studentId]);
+    const fetchStudentId = async () => {
+      if (user?.email) {
+        try {
+          const id = await UserService.getStudentId(user.email);
+          setStudentId(id.student_id);
+        } catch (err) {
+          console.error('Error fetching student ID:', err);
+          setError('Failed to load user information.');
+        }
+      }
+    };
+    
+    fetchStudentId();
+  }, [user]);
 
   // useEffect to scroll the chatbox to the bottom whenever messages change
   useEffect(() => {
@@ -81,33 +71,12 @@ const Chat = () => {
     }
   }, [messages]);
 
-  // Function to handle sending a new message
-  const theme = useTheme();
-  const navigate = useNavigate();
-  // const { user } = useAuth();
-
-  // Chat state
-  const [error, setError] = useState('');
-
-  // Refs
-  const messagesEndRef = useRef(null);
-
-  // Initialize chat and check status
+  // Initialize chat when studentId is available
   useEffect(() => {
-    // if (!studentId) {
-    //   setError('No student session found. Redirecting to home...');
-    //   setTimeout(() => {
-    //     navigate('/');
-    //   }, 2000);
-    //   return;
-    // }
-
-    initializeChat();
-
-    // Check status periodically
-    // const statusInterval = setInterval(checkStatus, 30000);
-    // return () => clearInterval(statusInterval);
-  }, [studentId, navigate]);
+    if (studentId) {
+      initializeChat();
+    }
+  }, [studentId]);
 
   const initializeChat = async () => {
     try {
