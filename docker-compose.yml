@@ -1,19 +1,36 @@
-version: '3.8'
-
+version: "3.8"
 services:
-  app:
-    build: .
+  norseai-frontend:
+    build:
+      context: .
+      dockerfile: dockerfile
+    container_name: norseai-frontend      
+    restart: unless-stopped
     ports:
       - "5173:5173"
-    environment:
-      - NODE_ENV=development
-    # volumes:
-    #   - .:/app
-    #   - /app/node_modules
-    restart: unless-stopped
     networks:
-      - frontend-network
+      - traefik-public
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.norseai-frontend.rule=Host(`norseai.sunshinek12.com`)"
+      - "traefik.http.routers.norseai-frontend.entrypoints=websecure"
+      - "traefik.http.routers.norseai-frontend.tls=true"
+      - "traefik.http.routers.norseai-frontend.tls.certresolver=letsencrypt"
+      - "traefik.http.services.norseai-frontend.loadbalancer.server.port=5173"
+      # Add middleware for headers
+      - "traefik.http.routers.norseai-frontend.middlewares=norseai-headers"
+      - "traefik.http.middlewares.norseai-headers.headers.customrequestheaders.X-Forwarded-Proto=https"
+      - "traefik.http.middlewares.norseai-headers.headers.customrequestheaders.X-Forwarded-Host=norseai.sunshinek12.com"
+      # Add health check
+      - "traefik.http.services.norseai-frontend.loadbalancer.healthcheck.path=/"
+      - "traefik.http.services.norseai-frontend.loadbalancer.healthcheck.interval=10s"      
+    environment:
+      - BACKEND_URL=http://norseai-backend:6700  # Internal HTTP communication
+      - NODE_ENV=production
+      - VITE_API_URL=http://norseai-backend:6700  # If using Vite env vars
 
 networks:
-  frontend-network:
+  traefik-public:
     external: true
+
+    

@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 // Base API configuration
-const API_BASE_URL = 'http://172.16.0.154:6700/'; // Adjust to match your FastAPI server port
+//const API_BASE_URL = 'http://norseai-backend:6700/'; // Adjust to match your FastAPI server port
+const API_BASE_URL = 'https://norseai.sunshinek12.com/api';
 
 // Create axios instance with default config
 const apiClient = axios.create({
