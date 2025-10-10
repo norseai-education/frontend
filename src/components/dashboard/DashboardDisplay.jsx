@@ -22,6 +22,7 @@ const DashboardDisplay = () => {
       if (user?.email) {
         try {
           const id = await UserService.getStudentId(user.email);
+          console.log("stuid endpoint: ", id);
           setStudentId(id);
           setLoading(false);
         } catch (err) {
@@ -43,6 +44,7 @@ const DashboardDisplay = () => {
 
     try {
       // Check if student needs assessment
+      console.log("studentId: ", studentId);
       const checkResult = await AssessmentService.checkNeedAssessment(studentId);
       console.log(checkResult);
       console.log(studentId);
