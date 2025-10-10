@@ -22,8 +22,8 @@ const DashboardDisplay = () => {
       if (user?.email) {
         try {
           const id = await UserService.getStudentId(user.email);
-          console.log("stuid endpoint: ", id);
-          setStudentId(id);
+          // console.log("stuid endpoint: ", id);
+          setStudentId(id.student_id);
           setLoading(false);
         } catch (err) {
           console.error('Error fetching student ID:', err);
