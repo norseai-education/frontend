@@ -294,7 +294,7 @@ const AssessmentQuiz = () => {
   if (!assessment) return null;
 
   const currentProblem = assessment.problems[currentQuestion];
-  const parsedProblem = parseProblemText(currentProblem.problem);
+  const parsedProblem = parseProblemText(currentProblem.display_problem);
   const progress = ((currentQuestion + 1) / assessment.problems.length) * 100;
   const isLastQuestion = currentQuestion === assessment.problems.length - 1;
   const hasSelectedAnswer = selectedAnswer !== '';
