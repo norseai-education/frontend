@@ -47,76 +47,17 @@ const AssessmentQuiz = () => {
   const [startTime, setStartTime] = useState(Date.now());
   const [questionStartTime, setQuestionStartTime] = useState(Date.now());
 
-  // Parse problem text to extract question and answer choices
+  // Parse problem text to display as-is with simple answer choices
   const parseProblemText = (problemText) => {
-    // Common patterns for multiple choice questions in LaTeX
-    // Pattern 1: (A) text (B) text (C) text (D) text (E) text
-    // Pattern 2: A. text B. text C. text D. text E. text
-    // Pattern 3: A) text B) text C) text D) text E) text
-    
-    const patterns = [
-      /\(([A-E])\)\s*([^()]+?)(?=\([A-E]\)|\s*$)/g,
-      /([A-E])\.?\s+([^A-E]+?)(?=[A-E]\.|\s*$)/g,
-      /([A-E])\)\s*([^)]+?)(?=[A-E]\)|\s*$)/g
-    ];
-
-    let matches = [];
-    let questionText = problemText;
-    
-    // Try each pattern
-    for (const pattern of patterns) {
-      const tempMatches = [...problemText.matchAll(pattern)];
-      if (tempMatches.length >= 4) { // Should have at least A, B, C, D
-        matches = tempMatches;
-        
-        // Extract question text (everything before first choice)
-        const firstMatch = matches[0];
-        const firstIndex = problemText.indexOf(firstMatch[0]);
-        questionText = problemText.substring(0, firstIndex).trim();
-        break;
-      }
-    }
-
-    // If no pattern matched, try to split the text more generically
-    if (matches.length < 4) {
-      // Look for patterns with choice letters
-      const choiceRegex = /([A-E])[.)]\s*(.+?)(?=\s*[A-E][.)]|\s*$)/g;
-      matches = [...problemText.matchAll(choiceRegex)];
-      
-      if (matches.length >= 4) {
-        const firstMatch = matches[0];
-        const firstIndex = problemText.indexOf(firstMatch[0]);
-        questionText = problemText.substring(0, firstIndex).trim();
-      }
-    }
-
-    // Create choices object
-    const choices = {};
-    matches.forEach(match => {
-      const letter = match[1];
-      const text = match[2].trim();
-      if (['A', 'B', 'C', 'D', 'E'].includes(letter)) {
-        choices[letter] = text;
-      }
-    });
-
-    // If still no choices found, provide default structure
-    if (Object.keys(choices).length < 4) {
-      return {
-        question: problemText,
-        choices: {
-          'A': 'Option A',
-          'B': 'Option B', 
-          'C': 'Option C',
-          'D': 'Option D',
-          'E': 'Option E'
-        }
-      };
-    }
-
     return {
-      question: questionText || problemText,
-      choices
+      question: problemText,
+      choices: {
+        'A': 'A',
+        'B': 'B', 
+        'C': 'C',
+        'D': 'D',
+        'E': 'E'
+      }
     };
   };
 
