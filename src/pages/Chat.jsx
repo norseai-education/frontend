@@ -23,6 +23,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import Layout from '../components/Layout';
 import ChatService from '../services/chatService';
 import UserService from '../services/userService';
+import LatexRenderer from '../components/common/LatexRenderer';
 
 // Main Chat component which can be used inside a larger application
 const Chat = () => {
@@ -257,7 +258,7 @@ const Chat = () => {
                 }}
               >
                 <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}>
-                  {message.text || (isStreaming && message.sender === 'ai' ? '...' : '')}
+                  <LatexRenderer>{message.text || (isStreaming && message.sender === 'ai' ? '...' : '')}</LatexRenderer>
                 </Typography>
               </Paper>
 

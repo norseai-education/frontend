@@ -24,6 +24,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import AssessmentService from '../../services/assessmentService';
 import ChatService from '../../services/chatService';
 import UserService from '../../services/userService';
+import LatexRenderer from '../common/LatexRenderer';
 
 const AssessmentQuiz = () => {
   const theme = useTheme();
@@ -387,7 +388,7 @@ const AssessmentQuiz = () => {
             </Typography>
             
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.6, fontSize: '1.1rem' }}>
-              {parsedProblem.question}
+              <LatexRenderer>{parsedProblem.question}</LatexRenderer>
             </Typography>
 
             {/* Answer Choice Buttons */}
@@ -441,7 +442,7 @@ const AssessmentQuiz = () => {
                       </Box>
                     }
                   >
-                    {parsedProblem.choices[letter]}
+                    <LatexRenderer>{parsedProblem.choices[letter]}</LatexRenderer>
                   </Button>
                 )
               ))}
