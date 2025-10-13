@@ -300,16 +300,16 @@ const AssessmentQuiz = () => {
   const hasSelectedAnswer = selectedAnswer !== '';
 
   return (
-    <Box>
+    <Box sx={{ backgroundColor: '#e3f2fd', minHeight: '100vh' }}>
       {/* Progress Header */}
-      <Paper elevation={2} sx={{ mb: 4 }}>
+      <Paper elevation={2} sx={{ mb: 4, backgroundColor: '#bbdefb' }}>
         <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Typography variant="h6" color="primary" sx={{ fontWeight: 'bold' }}>
+          <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1976d2' }}>
             NorseAI Assessment
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <TimerIcon color="action" />
-            <Typography color="text.secondary">
+            <TimerIcon sx={{ color: '#1976d2' }} />
+            <Typography sx={{ color: '#1976d2' }}>
               Question {currentQuestion + 1} of {assessment.problems.length}
             </Typography>
           </Box>
@@ -322,13 +322,13 @@ const AssessmentQuiz = () => {
       </Paper>
 
       <Container maxWidth="md">
-        <Card elevation={3} sx={{ mb: 4 }}>
+        <Card elevation={3} sx={{ mb: 4, backgroundColor: '#e1f5fe' }}>
           <CardContent sx={{ p: 4 }}>
-            <Typography variant="h5" color="primary" gutterBottom sx={{ fontWeight: 'bold' }}>
+            <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#1976d2', mb: 2 }}>
               Question {currentQuestion + 1}
             </Typography>
             
-            <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.6, fontSize: '1.1rem' }}>
+            <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.6, fontSize: '1.1rem', color: '#000000' }}>
               <LatexRenderer>{parsedProblem.question}</LatexRenderer>
             </Typography>
 
@@ -350,13 +350,13 @@ const AssessmentQuiz = () => {
                       fontSize: '1rem',
                       minHeight: '60px',
                       border: '2px solid',
-                      borderColor: selectedAnswer === letter ? 'primary.main' : 'grey.300',
-                      backgroundColor: selectedAnswer === letter ? 'primary.main' : 'transparent',
-                      color: selectedAnswer === letter ? 'white' : 'text.primary',
+                      borderColor: selectedAnswer === letter ? '#1976d2' : '#90caf9',
+                      backgroundColor: selectedAnswer === letter ? '#1976d2' : '#f3e5f5',
+                      color: selectedAnswer === letter ? 'white' : '#000000',
                       '&:hover': {
-                        borderColor: 'primary.main',
-                        backgroundColor: selectedAnswer === letter ? 'primary.dark' : 'primary.light',
-                        color: selectedAnswer === letter ? 'white' : 'primary.main'
+                        borderColor: '#1976d2',
+                        backgroundColor: selectedAnswer === letter ? '#1565c0' : '#e1bee7',
+                        color: selectedAnswer === letter ? 'white' : '#000000'
                       },
                       '& .MuiButton-startIcon': {
                         marginRight: 2,
@@ -370,8 +370,8 @@ const AssessmentQuiz = () => {
                           width: 32,
                           height: 32,
                           borderRadius: '50%',
-                          backgroundColor: selectedAnswer === letter ? 'rgba(255,255,255,0.9)' : 'primary.main',
-                          color: selectedAnswer === letter ? 'primary.main' : 'white',
+                          backgroundColor: selectedAnswer === letter ? 'rgba(255,255,255,0.9)' : '#1976d2',
+                          color: selectedAnswer === letter ? '#1976d2' : 'white',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
@@ -409,7 +409,13 @@ const AssessmentQuiz = () => {
             sx={{ 
               minWidth: 120,
               py: 1.5,
-              px: 3
+              px: 3,
+              borderColor: '#1976d2',
+              color: '#1976d2',
+              '&:hover': {
+                borderColor: '#1565c0',
+                backgroundColor: '#e3f2fd'
+              }
             }}
           >
             Previous
@@ -426,7 +432,11 @@ const AssessmentQuiz = () => {
                 minWidth: 180,
                 py: 1.5,
                 px: 4,
-                fontSize: '1.1rem'
+                fontSize: '1.1rem',
+                backgroundColor: '#1976d2',
+                '&:hover': {
+                  backgroundColor: '#1565c0'
+                }
               }}
             >
               {submitting ? 'Submitting...' : 'Submit Assessment'}
@@ -440,7 +450,11 @@ const AssessmentQuiz = () => {
               sx={{ 
                 minWidth: 120,
                 py: 1.5,
-                px: 3
+                px: 3,
+                backgroundColor: '#1976d2',
+                '&:hover': {
+                  backgroundColor: '#1565c0'
+                }
               }}
             >
               Next
