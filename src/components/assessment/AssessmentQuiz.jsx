@@ -159,7 +159,7 @@ const AssessmentQuiz = () => {
       }));
 
       console.log(studentAnswers);
-      console.log(studentId)
+      console.log(studentId);
 
       // Store the assessment
       const storeResult = await AssessmentService.storeAssessment(studentId, studentAnswers);
