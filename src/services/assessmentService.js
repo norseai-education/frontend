@@ -64,6 +64,7 @@ class AssessmentService {
    */
   static async storeAssessment(studentId, studentAnswers) {
     try {
+      console.log("Going into post method now...")
       const response = await apiClient.post(`/assessment/store_assessment/${studentId}`, {
         student_answers: studentAnswers
       });
