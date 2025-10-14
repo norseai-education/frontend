@@ -322,7 +322,7 @@ const AssessmentQuiz = () => {
       </Paper>
 
       <Container maxWidth="md">
-        <Card elevation={3} sx={{ mb: 4, backgroundColor: '#e1f5fe' }}>
+        <Card elevation={3} sx={{ mb: 4, backgroundColor: '#bbdefb' }}>
           <CardContent sx={{ p: 4 }}>
             <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#1976d2', mb: 2 }}>
               Question {currentQuestion + 1}
@@ -351,7 +351,7 @@ const AssessmentQuiz = () => {
                       minHeight: '60px',
                       border: '2px solid',
                       borderColor: selectedAnswer === letter ? '#1976d2' : '#90caf9',
-                      backgroundColor: selectedAnswer === letter ? '#1976d2' : '#f3e5f5',
+                      backgroundColor: selectedAnswer === letter ? '#1976d2' : '#e1f5fe',
                       color: selectedAnswer === letter ? 'white' : '#000000',
                       '&:hover': {
                         borderColor: '#1976d2',
