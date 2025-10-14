@@ -300,16 +300,16 @@ const AssessmentQuiz = () => {
   const hasSelectedAnswer = selectedAnswer !== '';
 
   return (
-    <Box sx={{ backgroundColor: '#1a237e', minHeight: '100vh' }}>
+    <Box sx={{ backgroundColor: '#19192D', minHeight: '100vh' }}>
       {/* Progress Header */}
-      <Paper elevation={2} sx={{ mb: 4, backgroundColor: '#283593' }}>
+      <Paper elevation={2} sx={{ mb: 4, backgroundColor: '#bbdefb' }}>
         <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#ffffff' }}>
+          <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1976d2' }}>
             NorseAI Assessment
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <TimerIcon sx={{ color: '#ffffff' }} />
-            <Typography sx={{ color: '#ffffff' }}>
+            <TimerIcon sx={{ color: '#1976d2' }} />
+            <Typography sx={{ color: '#1976d2' }}>
               Question {currentQuestion + 1} of {assessment.problems.length}
             </Typography>
           </Box>
@@ -322,7 +322,7 @@ const AssessmentQuiz = () => {
       </Paper>
 
       <Container maxWidth="md">
-        <Card elevation={3} sx={{ mb: 4, backgroundColor: '#ffffff' }}>
+        <Card elevation={3} sx={{ mb: 4, backgroundColor: '#e1f5fe' }}>
           <CardContent sx={{ p: 4 }}>
             <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#1976d2', mb: 2 }}>
               Question {currentQuestion + 1}
@@ -350,13 +350,13 @@ const AssessmentQuiz = () => {
                       fontSize: '1rem',
                       minHeight: '60px',
                       border: '2px solid',
-                      borderColor: selectedAnswer === letter ? '#1976d2' : '#e0e0e0',
-                      backgroundColor: selectedAnswer === letter ? '#1976d2' : '#f8f9fa',
+                      borderColor: selectedAnswer === letter ? '#1976d2' : '#90caf9',
+                      backgroundColor: selectedAnswer === letter ? '#1976d2' : '#f3e5f5',
                       color: selectedAnswer === letter ? 'white' : '#000000',
                       '&:hover': {
                         borderColor: '#1976d2',
-                        backgroundColor: selectedAnswer === letter ? '#1565c0' : '#e3f2fd',
-                        color: selectedAnswer === letter ? 'white' : '#1976d2'
+                        backgroundColor: selectedAnswer === letter ? '#1565c0' : '#e1bee7',
+                        color: selectedAnswer === letter ? 'white' : '#000000'
                       },
                       '& .MuiButton-startIcon': {
                         marginRight: 2,
@@ -410,11 +410,11 @@ const AssessmentQuiz = () => {
               minWidth: 120,
               py: 1.5,
               px: 3,
-              borderColor: '#ffffff',
-              color: '#ffffff',
+              borderColor: '#1976d2',
+              color: '#1976d2',
               '&:hover': {
-                borderColor: '#ffffff',
-                backgroundColor: 'rgba(255,255,255,0.1)'
+                borderColor: '#1565c0',
+                backgroundColor: '#e3f2fd'
               }
             }}
           >
@@ -433,10 +433,9 @@ const AssessmentQuiz = () => {
                 py: 1.5,
                 px: 4,
                 fontSize: '1.1rem',
-                backgroundColor: '#ffffff',
-                color: '#1976d2',
+                backgroundColor: '#1976d2',
                 '&:hover': {
-                  backgroundColor: '#f5f5f5'
+                  backgroundColor: '#1565c0'
                 }
               }}
             >
@@ -452,10 +451,9 @@ const AssessmentQuiz = () => {
                 minWidth: 120,
                 py: 1.5,
                 px: 3,
-                backgroundColor: '#ffffff',
-                color: '#1976d2',
+                backgroundColor: '#1976d2',
                 '&:hover': {
-                  backgroundColor: '#f5f5f5'
+                  backgroundColor: '#1565c0'
                 }
               }}
             >
