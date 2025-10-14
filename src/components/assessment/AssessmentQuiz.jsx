@@ -331,24 +331,12 @@ const AssessmentQuiz = () => {
           transition: 'all 0.3s ease'
         }}>
           <CardContent sx={{ p: 4 }}>
-            <Box sx={{ mb: 4, pb: 3, borderBottom: '2px solid #64b5f6' }}>
-              <Typography variant="caption" sx={{ 
-                color: '#1565c0', 
-                fontWeight: '600',
-                textTransform: 'uppercase',
-                letterSpacing: 1,
-                display: 'block',
-                mb: 1
-              }}>
-                Problem {currentQuestion + 1}
+            <Box sx={{ mb: 4 }}>
+              <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#1976d2', mb: 2 }}>
+                Question {currentQuestion + 1}
               </Typography>
-              <Typography variant="h4" sx={{ 
-                fontWeight: '600', 
-                color: '#1565c0',
-                lineHeight: 1.8,
-                fontSize: { xs: '1.3rem', md: '1.6rem' },
-                letterSpacing: 0.3
-              }}>
+              
+              <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.6, fontSize: '1.1rem', color: '#000000' }}>
                 <LatexRenderer>{parsedProblem.question}</LatexRenderer>
               </Typography>
             </Box>
@@ -357,7 +345,7 @@ const AssessmentQuiz = () => {
             <Box sx={{ 
               display: 'grid',
               gridTemplateColumns: { xs: '1fr 1fr', md: 'repeat(5, 1fr)' },
-              gap: 2,
+              gap: 1.5,
               mt: 4
             }}>
               {['A', 'B', 'C', 'D', 'E'].map((letter) => (
@@ -371,10 +359,10 @@ const AssessmentQuiz = () => {
                       flexDirection: 'column',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      py: 2.5,
+                      py: 1.5,
                       px: 1,
-                      gap: 1,
-                      minHeight: '110px',
+                      gap: 0.75,
+                      minHeight: '80px',
                       border: '2px solid',
                       borderColor: selectedAnswer === letter ? '#1565c0' : '#90caf9',
                       backgroundColor: selectedAnswer === letter ? '#1565c0' : '#e3f2fd',
@@ -383,7 +371,7 @@ const AssessmentQuiz = () => {
                       transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
                       cursor: 'pointer',
                       textTransform: 'none',
-                      fontSize: '0.95rem',
+                      fontSize: '0.85rem',
                       fontWeight: selectedAnswer === letter ? 600 : 500,
                       boxShadow: selectedAnswer === letter ? '0 4px 12px rgba(21, 101, 192, 0.3)' : 'none',
                       '&:hover': {
@@ -396,8 +384,8 @@ const AssessmentQuiz = () => {
                     }}
                   >
                     <Box sx={{
-                      width: 40,
-                      height: 40,
+                      width: 36,
+                      height: 36,
                       borderRadius: '50%',
                       backgroundColor: selectedAnswer === letter ? 'rgba(255, 255, 255, 0.95)' : '#1565c0',
                       color: selectedAnswer === letter ? '#1565c0' : 'white',
@@ -405,18 +393,10 @@ const AssessmentQuiz = () => {
                       alignItems: 'center',
                       justifyContent: 'center',
                       fontWeight: '700',
-                      fontSize: '1.1rem'
+                      fontSize: '1rem'
                     }}>
                       {letter}
                     </Box>
-                    <Typography sx={{ 
-                      fontSize: '0.85rem',
-                      fontWeight: 500,
-                      textAlign: 'center',
-                      minHeight: '20px'
-                    }}>
-                      <LatexRenderer>{parsedProblem.choices[letter]}</LatexRenderer>
-                    </Typography>
                   </Button>
                 )
               ))}
