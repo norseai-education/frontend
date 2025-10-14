@@ -162,7 +162,7 @@ const AssessmentQuiz = () => {
       console.log(studentId);
 
       // Store the assessment
-      const storeResult = await AssessmentService.storeAssessment(studentId, studentAnswers);
+      const storeResult = await AssessmentService.storeAssessment(studentId.student_id, studentAnswers);
 
       console.log(storeResult);
       
@@ -202,7 +202,7 @@ const AssessmentQuiz = () => {
   const handleContinue = async () => {
     try {
       // Initialize chat session and redirect
-      await ChatService.initializeSession(studentId, userGraph.userGraph);
+      await ChatService.initializeSession(studentId.student_id, userGraph.userGraph);
       navigate('/chat');
     } catch (err) {
       console.error('Error initializing chat:', err);
