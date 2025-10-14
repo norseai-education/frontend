@@ -300,16 +300,73 @@ const AssessmentQuiz = () => {
   const hasSelectedAnswer = selectedAnswer !== '';
 
   return (
-    <Box sx={{ backgroundColor: '#19192D', minHeight: '100vh' }}>
+    <Box sx={{ 
+      backgroundColor: '#19192D', 
+      minHeight: '100vh',
+      '& @keyframes pulse': {
+        '0%': {
+          opacity: 1,
+          transform: 'scale(1)'
+        },
+        '50%': {
+          opacity: 0.5,
+          transform: 'scale(1.1)'
+        },
+        '100%': {
+          opacity: 1,
+          transform: 'scale(1)'
+        }
+      }
+    }}>
       {/* Progress Header */}
-      <Paper elevation={2} sx={{ mb: 4, backgroundColor: '#bbdefb' }}>
-        <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1976d2' }}>
+      <Paper elevation={4} sx={{ 
+        mb: 4, 
+        backgroundColor: '#bbdefb',
+        borderRadius: '0 0 16px 16px',
+        border: '1px solid rgba(25, 118, 210, 0.1)',
+        boxShadow: '0 4px 20px rgba(25, 118, 210, 0.1)'
+      }}>
+        <Box sx={{ 
+          p: { xs: 2, sm: 3 }, 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: 2
+        }}>
+          <Typography variant="h6" sx={{ 
+            fontWeight: 'bold', 
+            color: '#1976d2',
+            fontSize: { xs: '1.1rem', sm: '1.3rem' },
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1
+          }}>
+            <Box sx={{
+              width: 8,
+              height: 8,
+              borderRadius: '50%',
+              backgroundColor: '#1976d2',
+              animation: 'pulse 2s infinite'
+            }} />
             NorseAI Assessment
           </Typography>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <TimerIcon sx={{ color: '#1976d2' }} />
-            <Typography sx={{ color: '#1976d2' }}>
+          <Box sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: 2,
+            backgroundColor: 'rgba(255, 255, 255, 0.7)',
+            px: 2,
+            py: 1,
+            borderRadius: '20px',
+            border: '1px solid rgba(25, 118, 210, 0.2)'
+          }}>
+            <TimerIcon sx={{ color: '#1976d2', fontSize: '1.2rem' }} />
+            <Typography sx={{ 
+              color: '#1976d2',
+              fontWeight: '600',
+              fontSize: { xs: '0.9rem', sm: '1rem' }
+            }}>
               Question {currentQuestion + 1} of {assessment.problems.length}
             </Typography>
           </Box>
@@ -317,73 +374,152 @@ const AssessmentQuiz = () => {
         <LinearProgress
           variant="determinate"
           value={progress}
-          sx={{ height: 6 }}
+          sx={{ 
+            height: 8,
+            borderRadius: '0 0 16px 16px',
+            '& .MuiLinearProgress-bar': {
+              borderRadius: '0 0 16px 16px',
+              background: 'linear-gradient(90deg, #1976d2 0%, #42a5f5 100%)'
+            }
+          }}
         />
       </Paper>
 
       <Container maxWidth="md">
-        <Card elevation={3} sx={{ mb: 4, backgroundColor: '#bbdefb' }}>
-          <CardContent sx={{ p: 4 }}>
-            <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#1976d2', mb: 2 }}>
-              Question {currentQuestion + 1}
-            </Typography>
+        <Card elevation={6} sx={{ 
+          mb: 4, 
+          backgroundColor: '#bbdefb',
+          borderRadius: '16px',
+          border: '1px solid rgba(25, 118, 210, 0.1)',
+          boxShadow: '0 8px 32px rgba(25, 118, 210, 0.15)',
+          backdropFilter: 'blur(10px)'
+        }}>
+          <CardContent sx={{ p: { xs: 3, sm: 4, md: 5 } }}>
+            <Box sx={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              mb: 3,
+              pb: 2,
+              borderBottom: '2px solid rgba(25, 118, 210, 0.1)'
+            }}>
+              <Box sx={{
+                width: 40,
+                height: 40,
+                borderRadius: '50%',
+                backgroundColor: '#1976d2',
+                color: 'white',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: 'bold',
+                fontSize: '1.2rem',
+                mr: 2,
+                boxShadow: '0 4px 12px rgba(25, 118, 210, 0.3)'
+              }}>
+                {currentQuestion + 1}
+              </Box>
+              <Typography variant="h5" sx={{ 
+                fontWeight: 'bold', 
+                color: '#1976d2',
+                fontSize: { xs: '1.3rem', sm: '1.5rem' }
+              }}>
+                Question {currentQuestion + 1}
+              </Typography>
+            </Box>
             
-            <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.6, fontSize: '1.1rem', color: '#000000' }}>
+            <Typography variant="body1" sx={{ 
+              mb: 4, 
+              lineHeight: 1.7, 
+              fontSize: { xs: '1rem', sm: '1.1rem' }, 
+              color: '#000000',
+              fontWeight: '400',
+              textAlign: 'justify'
+            }}>
               <LatexRenderer>{parsedProblem.question}</LatexRenderer>
             </Typography>
 
-            {/* Answer Choice Buttons */}
-            <Box sx={{ width: '100%' }}>
+            {/* Answer Choice Buttons - Horizontal Layout */}
+            <Box sx={{ 
+              width: '100%',
+              display: 'flex',
+              flexDirection: { xs: 'column', sm: 'row' },
+              gap: { xs: 2, sm: 1.5 },
+              justifyContent: 'center',
+              alignItems: 'stretch',
+              flexWrap: 'wrap'
+            }}>
               {['A', 'B', 'C', 'D', 'E'].map((letter) => (
                 parsedProblem.choices[letter] && (
                   <Button
                     key={letter}
-                    fullWidth
                     variant={selectedAnswer === letter ? "contained" : "outlined"}
                     onClick={() => handleAnswerChange(letter)}
                     sx={{
-                      mb: 2,
-                      p: 2,
-                      justifyContent: 'flex-start',
-                      textAlign: 'left',
+                      flex: { xs: '1 1 100%', sm: '1 1 0' },
+                      minWidth: { xs: '100%', sm: '120px', md: '140px' },
+                      maxWidth: { xs: '100%', sm: '180px' },
+                      p: { xs: 2, sm: 1.5 },
+                      minHeight: { xs: '60px', sm: '80px' },
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      textAlign: 'center',
                       textTransform: 'none',
-                      fontSize: '1rem',
-                      minHeight: '60px',
+                      fontSize: { xs: '1rem', sm: '0.9rem' },
+                      fontWeight: '500',
                       border: '2px solid',
                       borderColor: selectedAnswer === letter ? '#1976d2' : '#90caf9',
                       backgroundColor: selectedAnswer === letter ? '#1976d2' : '#e1f5fe',
                       color: selectedAnswer === letter ? 'white' : '#000000',
+                      borderRadius: '12px',
+                      boxShadow: selectedAnswer === letter 
+                        ? '0 4px 12px rgba(25, 118, 210, 0.3)' 
+                        : '0 2px 8px rgba(0, 0, 0, 0.1)',
+                      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                       '&:hover': {
                         borderColor: '#1976d2',
                         backgroundColor: selectedAnswer === letter ? '#1565c0' : '#e1bee7',
-                        color: selectedAnswer === letter ? 'white' : '#000000'
+                        color: selectedAnswer === letter ? 'white' : '#000000',
+                        transform: 'translateY(-2px)',
+                        boxShadow: selectedAnswer === letter 
+                          ? '0 6px 16px rgba(25, 118, 210, 0.4)' 
+                          : '0 4px 12px rgba(0, 0, 0, 0.15)'
                       },
-                      '& .MuiButton-startIcon': {
-                        marginRight: 2,
-                        fontSize: '1.2rem',
-                        fontWeight: 'bold'
+                      '&:active': {
+                        transform: 'translateY(0px)'
                       }
                     }}
-                    startIcon={
-                      <Box
-                        sx={{
-                          width: 32,
-                          height: 32,
-                          borderRadius: '50%',
-                          backgroundColor: selectedAnswer === letter ? 'rgba(255,255,255,0.9)' : '#1976d2',
-                          color: selectedAnswer === letter ? '#1976d2' : 'white',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontWeight: 'bold',
-                          fontSize: '1rem'
-                        }}
-                      >
-                        {letter}
-                      </Box>
-                    }
                   >
-                    <LatexRenderer>{parsedProblem.choices[letter]}</LatexRenderer>
+                    {/* Letter Badge */}
+                    <Box
+                      sx={{
+                        width: 36,
+                        height: 36,
+                        borderRadius: '50%',
+                        backgroundColor: selectedAnswer === letter ? 'rgba(255,255,255,0.9)' : '#1976d2',
+                        color: selectedAnswer === letter ? '#1976d2' : 'white',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontWeight: 'bold',
+                        fontSize: '1.1rem',
+                        mb: 1,
+                        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'
+                      }}
+                    >
+                      {letter}
+                    </Box>
+                    
+                    {/* Answer Text */}
+                    <Box sx={{ 
+                      fontSize: { xs: '0.9rem', sm: '0.8rem' },
+                      fontWeight: '500',
+                      lineHeight: 1.2,
+                      textAlign: 'center'
+                    }}>
+                      <LatexRenderer>{parsedProblem.choices[letter]}</LatexRenderer>
+                    </Box>
                   </Button>
                 )
               ))}
@@ -398,7 +534,8 @@ const AssessmentQuiz = () => {
           alignItems: 'center',
           mt: 4,
           mb: 4,
-          px: 2
+          px: 2,
+          gap: 2
         }}>
           <Button
             variant="outlined"
@@ -407,14 +544,26 @@ const AssessmentQuiz = () => {
             disabled={currentQuestion === 0}
             size="large"
             sx={{ 
-              minWidth: 120,
+              minWidth: { xs: 100, sm: 120 },
               py: 1.5,
               px: 3,
               borderColor: '#1976d2',
               color: '#1976d2',
+              borderRadius: '12px',
+              fontWeight: '600',
+              fontSize: '1rem',
+              borderWidth: '2px',
+              transition: 'all 0.3s ease',
               '&:hover': {
                 borderColor: '#1565c0',
-                backgroundColor: '#e3f2fd'
+                backgroundColor: '#e3f2fd',
+                transform: 'translateY(-2px)',
+                boxShadow: '0 4px 12px rgba(25, 118, 210, 0.2)'
+              },
+              '&:disabled': {
+                borderColor: '#90caf9',
+                color: '#90caf9',
+                backgroundColor: 'transparent'
               }
             }}
           >
@@ -429,13 +578,23 @@ const AssessmentQuiz = () => {
               disabled={currentQuestion !== assessment.problems.length - 1}
               size="large"
               sx={{ 
-                minWidth: 180,
+                minWidth: { xs: 160, sm: 180 },
                 py: 1.5,
                 px: 4,
                 fontSize: '1.1rem',
+                fontWeight: '600',
                 backgroundColor: '#1976d2',
+                borderRadius: '12px',
+                boxShadow: '0 4px 12px rgba(25, 118, 210, 0.3)',
+                transition: 'all 0.3s ease',
                 '&:hover': {
-                  backgroundColor: '#1565c0'
+                  backgroundColor: '#1565c0',
+                  transform: 'translateY(-2px)',
+                  boxShadow: '0 6px 16px rgba(25, 118, 210, 0.4)'
+                },
+                '&:disabled': {
+                  backgroundColor: '#90caf9',
+                  color: 'white'
                 }
               }}
             >
@@ -448,12 +607,19 @@ const AssessmentQuiz = () => {
               onClick={handleNext}
               size="large"
               sx={{ 
-                minWidth: 120,
+                minWidth: { xs: 100, sm: 120 },
                 py: 1.5,
                 px: 3,
                 backgroundColor: '#1976d2',
+                borderRadius: '12px',
+                fontWeight: '600',
+                fontSize: '1rem',
+                boxShadow: '0 4px 12px rgba(25, 118, 210, 0.3)',
+                transition: 'all 0.3s ease',
                 '&:hover': {
-                  backgroundColor: '#1565c0'
+                  backgroundColor: '#1565c0',
+                  transform: 'translateY(-2px)',
+                  boxShadow: '0 6px 16px rgba(25, 118, 210, 0.4)'
                 }
               }}
             >
