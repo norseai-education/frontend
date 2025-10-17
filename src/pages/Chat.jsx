@@ -247,8 +247,8 @@ const Chat = () => {
                 sx={{
                   p: 2,
                   maxWidth: '70%',
-                  bgcolor: message.sender === 'user' ? 'primary.main' : 'background.default',
-                  color: message.sender === 'user' ? 'primary.contrastText' : 'text.primary',
+                  bgcolor: message.sender === 'user' ? 'primary.main' : '#f5f5f5',
+                  color: message.sender === 'user' ? 'primary.contrastText' : '#000000',
                   borderRadius: 2,
                   ...(message.sender === 'user' ? {
                     borderBottomRightRadius: 4
