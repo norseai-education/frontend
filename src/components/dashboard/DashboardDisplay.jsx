@@ -1,11 +1,12 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import { Grid, Card, CardContent, Typography, Box, Button, CircularProgress } from '@mui/material';
+import { Grid, Card, CardContent, Typography, Box, Button, CircularProgress, LinearProgress } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import AssessmentService from '../../services/assessmentService';
 import ChatService from '../../services/chatService';
 import UserService from '../../services/userService';
+import UserGraphService from '../../services/userGraphService';
 
 const cardData = [
   { title: 'AMC 8', content: 'View and manage student assessments.', button: 'Start Lesson' }];
@@ -16,6 +17,9 @@ const DashboardDisplay = () => {
   const [studentId, setStudentId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [userGraph, setUserGraph] = useState(null);
+  const [graphLoading, setGraphLoading] = useState(false);
+  const [graphError, setGraphError] = useState(null);
 
   useEffect(() => {
     const fetchStudentId = async () => {
@@ -35,6 +39,23 @@ const DashboardDisplay = () => {
     
     fetchStudentId();
   }, [user]);
+
+  useEffect(() => {
+    const fetchGraph = async () => {
+      if (!studentId) return;
+      try {
+        setGraphLoading(true);
+        const graph = await UserGraphService.getUserGraph(studentId);
+        setUserGraph(graph || {});
+      } catch (e) {
+        console.error('Error fetching user graph:', e);
+        setGraphError('Failed to load knowledge graph.');
+      } finally {
+        setGraphLoading(false);
+      }
+    };
+    fetchGraph();
+  }, [studentId]);
 
   const startLesson = async () => {
     if (!studentId) {
@@ -79,6 +100,54 @@ const DashboardDisplay = () => {
   return (
     <Box sx={{ flexGrow: 1, p: 3 }}>
       <Grid container spacing={4}>
+        {/* Knowledge Graph Card */}
+        <Grid item xs={12} md={8}>
+          <Card sx={{ minWidth: 300, minHeight: 350, display: 'flex', flexDirection: 'column' }}>
+            <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', p: 2 }}>
+              <Box sx={{ width: '100%' }}>
+                <Typography variant="h5" component="div">
+                  Your Knowledge Progress
+                </Typography>
+                <Typography sx={{ mt: 1 }} color="text.secondary">
+                  Top concepts based on your current graph
+                </Typography>
+                <Box sx={{ mt: 2 }}>
+                  {graphLoading ? (
+                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 120 }}>
+                      <CircularProgress size={24} />
+                    </Box>
+                  ) : graphError ? (
+                    <Typography color="error">{graphError}</Typography>
+                  ) : userGraph && Object.keys(userGraph).length > 0 ? (
+                    <Box>
+                      {Object.entries(userGraph)
+                        .sort((a, b) => (b[1] ?? 0) - (a[1] ?? 0))
+                        .slice(0, 10)
+                        .map(([concept, value]) => {
+                          const pct = Math.max(0, Math.min(100, Math.round(Number(value ?? 0) * 100)));
+                          return (
+                            <Box key={concept} sx={{ mb: 1.5 }}>
+                              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                                <Typography variant="body2" sx={{ pr: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={concept}>
+                                  {concept}
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary">
+                                  {pct}%
+                                </Typography>
+                              </Box>
+                              <LinearProgress variant="determinate" value={pct} />
+                            </Box>
+                          );
+                        })}
+                    </Box>
+                  ) : (
+                    <Typography color="text.secondary">No knowledge data yet. Start a lesson to build your graph.</Typography>
+                  )}
+                </Box>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
         {cardData.map((card, index) => (
           <Grid item xs={12} sm={6} md={4} key={index}>
             <Card sx={{ minWidth: 300, height: 350, display: 'flex', flexDirection: 'column' }}>
