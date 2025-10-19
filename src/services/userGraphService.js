@@ -12,7 +12,7 @@ class UserGraphService {
   static async getUserGraph(student_id) {
     try {
       const response = await apiClient.get(`/user_graph/get_user_graph/${student_id}`);
-      return response.data.user_graph;
+      return response.data;
     } catch (error) {
       console.error('Get user graph error:', error);
       throw error;
@@ -27,7 +27,7 @@ class UserGraphService {
     static async getCloseConcepts(student_id) {
       try {
         const response = await apiClient.get(`/user_graph/get_close_graph/${student_id}`);
-        return response.data;
+        return response.data.user_graph;
       } catch (error) {
         console.error('Get user graph error:', error);
         throw error;

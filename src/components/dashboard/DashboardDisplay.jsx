@@ -82,6 +82,8 @@ const DashboardDisplay = () => {
         const response = await UserGraphService.getUserGraph(studentId);
         const graph = response.user_graph;
         const learning_objective = response.learning_objective;
+        console.log("learning_objective: ", learning_objective);
+        console.log("graph: ", graph);
         setUserGraph(graph || {});
         setLearningObjective(learning_objective || '');
       } catch (e) {
