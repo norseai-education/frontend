@@ -221,7 +221,7 @@ const DashboardDisplay = () => {
             <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', p: 2 }}>
               <Box sx={{ width: '100%' }}>
                 <Typography variant="h5" component="div">
-                  Your Knowledge Progress
+                  Progress
                 </Typography>
                 <Typography sx={{ mt: 1 }} color="text.secondary">
                   Top concepts based on your current graph
@@ -299,7 +299,7 @@ const DashboardDisplay = () => {
             <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', p: 2 }}>
               <Box sx={{ width: '100%' }}>
                 <Typography variant="h5" component="div" sx={{ color: 'white', fontWeight: 'bold' }}>
-                  🎮 Knowledge Map
+                  Your Graph
                 </Typography>
                 <Typography sx={{ mt: 1, color: 'rgba(255,255,255,0.8)' }}>
                   Your learning journey across all concepts
@@ -347,7 +347,7 @@ const DashboardDisplay = () => {
                                     </Typography>
                                     {isLearningObjective && (
                                       <Typography variant="body2" sx={{ color: '#9c27b0', fontWeight: 'bold', mt: 0.5 }}>
-                                        🎯 Current Learning Objective
+                                        Current Learning Objective
                                       </Typography>
                                     )}
                                   </Box>
