@@ -54,7 +54,7 @@ const DashboardDisplay = () => {
   const [closeConcepts, setCloseConcepts] = useState(null);
   const [graphLoading, setGraphLoading] = useState(false);
   const [graphError, setGraphError] = useState(null);
-
+  const [learningObjective, setLearningObjective] = useState('');
   useEffect(() => {
     const fetchStudentId = async () => {
       if (user?.email) {
@@ -79,8 +79,11 @@ const DashboardDisplay = () => {
       if (!studentId) return;
       try {
         setGraphLoading(true);
-        const graph = await UserGraphService.getUserGraph(studentId);
+        const response = await UserGraphService.getUserGraph(studentId);
+        const graph = response.user_graph;
+        const learning_objective = response.learning_objective;
         setUserGraph(graph || {});
+        setLearningObjective(learning_objective || '');
       } catch (e) {
         console.error('Error fetching user graph:', e);
         setGraphError('Failed to load knowledge graph.');
@@ -109,7 +112,13 @@ const DashboardDisplay = () => {
   }, [studentId]);
 
   // Helper functions for gamified userGraph visualization
-  const getMasteryColor = (value) => {
+  const getMasteryColor = (value, concept) => {
+    // Check if this concept matches the current learning objective
+    if (learningObjective && concept.toLowerCase() === learningObjective.toLowerCase()) {
+      return '#9c27b0'; // Purple - Current Learning Objective
+    }
+    
+    // Regular mastery colors
     if (value >= 0.8) return '#4caf50'; // Green - Mastered
     if (value >= 0.6) return '#8bc34a'; // Light Green - Advanced
     if (value >= 0.4) return '#ffc107'; // Yellow - Intermediate
@@ -252,9 +261,9 @@ const DashboardDisplay = () => {
           </Card>
         </Grid>
 
-        {/* Gamified Knowledge Graph Card - Visual Overview */}
+        {/* Visual Knowledge Graph Card - Visual Overview */}
         <Grid item xs={12} md={6}>
-          <Card sx={{ minWidth: 300, minHeight: 350, display: 'flex', flexDirection: 'column', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+          <Card sx={{ minWidth: 300, minHeight: 350, display: 'flex', flexDirection: 'column' }}>
             <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', p: 2 }}>
               <Box sx={{ width: '100%' }}>
                 <Typography variant="h5" component="div" sx={{ color: 'white', fontWeight: 'bold' }}>
@@ -288,9 +297,10 @@ const DashboardDisplay = () => {
                           const masteryValue = Math.max(0, Math.min(1, Number(value) || 0));
                           const nodeHeight = getNodeHeight(masteryValue);
                           const nodeSize = getNodeSize(masteryValue);
-                          const nodeColor = getMasteryColor(masteryValue);
+                          const nodeColor = getMasteryColor(masteryValue, concept);
                           const percentage = Math.round(masteryValue * 100);
                           const nearComplete = isNearComplete(masteryValue);
+                          const isLearningObjective = learningObjective && concept.toLowerCase() === learningObjective.toLowerCase();
                           
                           return (
                             <Fade in={true} timeout={500 + index * 50} key={concept}>
@@ -303,6 +313,11 @@ const DashboardDisplay = () => {
                                     <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.9)' }}>
                                       {percentage}% Mastery
                                     </Typography>
+                                    {isLearningObjective && (
+                                      <Typography variant="body2" sx={{ color: '#9c27b0', fontWeight: 'bold', mt: 0.5 }}>
+                                        🎯 Current Learning Objective
+                                      </Typography>
+                                    )}
                                   </Box>
                                 }
                                 arrow
@@ -331,9 +346,17 @@ const DashboardDisplay = () => {
                                       borderRadius: '2px 2px 0 0', // Smaller border radius for touching bars
                                       position: 'relative',
                                       transition: 'all 0.3s ease',
-                                      boxShadow: nearComplete ? '0 0 20px rgba(76, 175, 80, 0.6)' : '0 2px 8px rgba(0,0,0,0.3)',
-                                      animation: nearComplete ? `${glow} 2s ease-in-out infinite` : 'none',
-                                      '&::before': nearComplete ? {
+                                      boxShadow: isLearningObjective 
+                                        ? '0 0 25px rgba(156, 39, 176, 0.8)' 
+                                        : nearComplete 
+                                          ? '0 0 20px rgba(76, 175, 80, 0.6)' 
+                                          : '0 2px 8px rgba(0,0,0,0.3)',
+                                      animation: isLearningObjective 
+                                        ? `${glow} 1.5s ease-in-out infinite` 
+                                        : nearComplete 
+                                          ? `${glow} 2s ease-in-out infinite` 
+                                          : 'none',
+                                      '&::before': (isLearningObjective || nearComplete) ? {
                                         content: '""',
                                         position: 'absolute',
                                         top: -2,
@@ -341,12 +364,16 @@ const DashboardDisplay = () => {
                                         right: -2,
                                         bottom: -2,
                                         borderRadius: '4px 4px 0 0',
-                                        background: `linear-gradient(45deg, ${nodeColor}, transparent, ${nodeColor})`,
+                                        background: isLearningObjective 
+                                          ? `linear-gradient(45deg, ${nodeColor}, transparent, ${nodeColor})`
+                                          : `linear-gradient(45deg, ${nodeColor}, transparent, ${nodeColor})`,
                                         zIndex: -1,
-                                        animation: `${pulse} 2s ease-in-out infinite`,
+                                        animation: isLearningObjective 
+                                          ? `${pulse} 1.5s ease-in-out infinite` 
+                                          : `${pulse} 2s ease-in-out infinite`,
                                       } : {},
                                       '&:hover': {
-                                        boxShadow: `0 0 25px ${nodeColor}`,
+                                        boxShadow: `0 0 30px ${nodeColor}`,
                                         transform: 'scale(1.05)',
                                       }
                                     }}
@@ -415,6 +442,7 @@ const DashboardDisplay = () => {
                 {userGraph && Object.keys(userGraph).length > 0 && (
                   <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center', gap: 2, flexWrap: 'wrap' }}>
                     {[
+                      { color: '#9c27b0', label: 'Learning Objective' },
                       { color: '#4caf50', label: 'Mastered' },
                       { color: '#8bc34a', label: 'Advanced' },
                       { color: '#ffc107', label: 'Intermediate' },
