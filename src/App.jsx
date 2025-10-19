@@ -18,6 +18,7 @@ import PlaceholderPage from './pages/PlaceholderPage';
 import Courses from './pages/Courses';
 import Analysis from './pages/Analysis';
 import Materials from './pages/Materials';
+import EndLesson from './pages/EndLesson';
 
 function App() {
   return (
