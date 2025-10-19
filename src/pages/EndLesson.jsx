@@ -100,7 +100,7 @@ const EndLesson = () => {
             {/* Placeholder note */}
             <Box sx={{ mt: 3, p: 2, backgroundColor: 'grey.50', borderRadius: 2 }}>
               <Typography variant="body2" sx={{ color: 'text.secondary', textAlign: 'center' }}>
-                This will be replaced with an interactive knowledge graph showing your learning journey and concept mastery.
+                This will be replaced with an interactive knowledge graph as a continous bar graph with before lesson vs. after lesson visuals.
               </Typography>
             </Box>
           </Paper>
