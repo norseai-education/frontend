@@ -239,17 +239,46 @@ const DashboardDisplay = () => {
                         .slice(0, 10)
                         .map(([concept, value]) => {
                           const pct = Math.max(0, Math.min(100, Math.round(Number(value ?? 0) * 100)));
+                          const isCurrentLearningObjective = learningObjective && concept.toLowerCase() === learningObjective.toLowerCase();
+                          
                           return (
                             <Box key={concept} sx={{ mb: 1.5 }}>
                               <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-                                <Typography variant="body2" sx={{ pr: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={concept}>
+                                <Typography 
+                                  variant="body2" 
+                                  sx={{ 
+                                    pr: 1, 
+                                    overflow: 'hidden', 
+                                    textOverflow: 'ellipsis', 
+                                    whiteSpace: 'nowrap',
+                                    color: isCurrentLearningObjective ? '#9c27b0' : 'inherit',
+                                    fontWeight: isCurrentLearningObjective ? 'bold' : 'normal',
+                                    position: 'relative'
+                                  }} 
+                                  title={concept}
+                                >
+                                  {isCurrentLearningObjective && '🎯 '}
                                   {concept}
                                 </Typography>
-                                <Typography variant="body2" color="text.secondary">
+                                <Typography 
+                                  variant="body2" 
+                                  sx={{ 
+                                    color: isCurrentLearningObjective ? '#9c27b0' : 'text.secondary',
+                                    fontWeight: isCurrentLearningObjective ? 'bold' : 'normal'
+                                  }}
+                                >
                                   {pct}%
                                 </Typography>
                               </Box>
-                              <LinearProgress variant="determinate" value={pct} />
+                              <LinearProgress 
+                                variant="determinate" 
+                                value={pct}
+                                sx={{
+                                  '& .MuiLinearProgress-bar': {
+                                    backgroundColor: isCurrentLearningObjective ? '#9c27b0' : undefined,
+                                  }
+                                }}
+                              />
                             </Box>
                           );
                         })}
