@@ -20,6 +20,21 @@ class UserGraphService {
   }
 
   /**
+   * Get close concepts
+   * @param {number} student_id - Student's ID
+   * @returns {Promise<{user_graph: object}>}
+   */
+    static async getCloseConcepts(student_id) {
+      try {
+        const response = await apiClient.get(`/user_graph/get_close_graph/${student_id}`);
+        return response.data.user_graph;
+      } catch (error) {
+        console.error('Get user graph error:', error);
+        throw error;
+      }
+    }
+
+  /**
    * Update user graph
    * @param {number} student_id - Student's ID
    * @param {object} user_graph - User graph object

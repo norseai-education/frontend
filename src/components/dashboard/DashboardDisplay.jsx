@@ -18,6 +18,7 @@ const DashboardDisplay = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [userGraph, setUserGraph] = useState(null);
+  const [closeConcepts, setCloseConcepts] = useState(null);
   const [graphLoading, setGraphLoading] = useState(false);
   const [graphError, setGraphError] = useState(null);
 
@@ -55,6 +56,23 @@ const DashboardDisplay = () => {
       }
     };
     fetchGraph();
+  }, [studentId]);
+
+  useEffect(() => {
+    const fetchCloseConcepts = async () => {
+      if (!studentId) return;
+      try {
+        setGraphLoading(true);
+        const graph = await UserGraphService.getCloseConcepts(studentId);
+        setCloseConcepts(graph || {});
+      } catch (e) {
+        console.error('Error fetching close concepts:', e);
+        setGraphError('Failed to load close concepts.');
+      } finally {
+        setGraphLoading(false);
+      }
+    };
+    fetchCloseConcepts();
   }, [studentId]);
 
   const startLesson = async () => {
@@ -118,9 +136,9 @@ const DashboardDisplay = () => {
                     </Box>
                   ) : graphError ? (
                     <Typography color="error">{graphError}</Typography>
-                  ) : userGraph && Object.keys(userGraph).length > 0 ? (
+                  ) : closeConcepts && Object.keys(closeConcepts).length > 0 ? (
                     <Box>
-                      {Object.entries(userGraph)
+                      {Object.entries(closeConcepts)
                         .sort((a, b) => (b[1] ?? 0) - (a[1] ?? 0))
                         .slice(0, 10)
                         .map(([concept, value]) => {
