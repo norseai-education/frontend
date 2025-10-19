@@ -137,7 +137,9 @@ const Chat = () => {
     try {
       // Get the AI response using the regular sendMessage method
       const aiResponse = await ChatService.sendMessage(studentId, message);
-      
+      navigate('/EndLesson')
+      if (aiResponse === "complete") {
+      }
       // Add the AI response to the state
       const aiMessageId = Date.now() + 1;
       setMessages(prevMessages => [...prevMessages, { id: aiMessageId, sender: 'ai', text: aiResponse }]);
@@ -165,11 +167,11 @@ const Chat = () => {
     
     try {
       await ChatService.endSession(studentId);
-      navigate('/');
+      navigate('/dashboard');
     } catch (err) {
       console.error('Error ending session:', err);
       // Navigate anyway
-      navigate('/');
+      navigate('/dashboard');
     }
   };
 
