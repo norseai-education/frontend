@@ -420,27 +420,6 @@ const DashboardDisplay = () => {
                                       borderRadius: 0.5,
                                     }}
                                   />
-                                  
-                                  {/* Concept Label - Below the bar */}
-                                  <Typography 
-                                    variant="caption" 
-                                    sx={{ 
-                                      color: 'rgba(255,255,255,0.7)',
-                                      fontSize: '6px',
-                                      writingMode: 'vertical-rl',
-                                      textOrientation: 'mixed',
-                                      height: '25px',
-                                      overflow: 'hidden',
-                                      textOverflow: 'ellipsis',
-                                      whiteSpace: 'nowrap',
-                                      maxWidth: '12px',
-                                      mt: 0.5,
-                                      lineHeight: 1,
-                                      textAlign: 'center'
-                                    }}
-                                  >
-                                    {concept.length > 4 ? concept.substring(0, 4) + '...' : concept}
-                                  </Typography>
                                 </Box>
                               </Tooltip>
                             </Fade>
