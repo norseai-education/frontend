@@ -118,9 +118,9 @@ const DashboardDisplay = () => {
   };
 
   const getNodeSize = (value) => {
-    // Consistent width for touching bars, with slight variation based on mastery
-    const baseSize = 12;
-    const masteryBonus = Math.round(value * 4);
+    // Much skinnier bars to fit more on screen without scrolling
+    const baseSize = 4;
+    const masteryBonus = Math.round(value * 2);
     return Math.max(baseSize, baseSize + masteryBonus);
   };
 
@@ -251,18 +251,9 @@ const DashboardDisplay = () => {
                       height: '100%', 
                       gap: 0, // Remove gap to make bars touch
                       px: 1,
-                      overflowX: 'auto',
-                      '&::-webkit-scrollbar': {
-                        height: 4,
-                      },
-                      '&::-webkit-scrollbar-track': {
-                        background: 'rgba(255,255,255,0.1)',
-                        borderRadius: 2,
-                      },
-                      '&::-webkit-scrollbar-thumb': {
-                        background: 'rgba(255,255,255,0.3)',
-                        borderRadius: 2,
-                      },
+                      overflowX: 'hidden', // Remove scrolling to fit everything
+                      flexWrap: 'nowrap',
+                      justifyContent: 'flex-start',
                     }}>
                       {Object.entries(userGraph)
                         .sort((a, b) => b[1] - a[1]) // Sort by mastery level
@@ -349,20 +340,20 @@ const DashboardDisplay = () => {
                                     variant="caption" 
                                     sx={{ 
                                       color: 'rgba(255,255,255,0.7)',
-                                      fontSize: '7px',
+                                      fontSize: '6px',
                                       writingMode: 'vertical-rl',
                                       textOrientation: 'mixed',
-                                      height: '30px',
+                                      height: '25px',
                                       overflow: 'hidden',
                                       textOverflow: 'ellipsis',
                                       whiteSpace: 'nowrap',
-                                      maxWidth: '15px',
+                                      maxWidth: '12px',
                                       mt: 0.5,
                                       lineHeight: 1,
                                       textAlign: 'center'
                                     }}
                                   >
-                                    {concept.length > 6 ? concept.substring(0, 6) + '...' : concept}
+                                    {concept.length > 4 ? concept.substring(0, 4) + '...' : concept}
                                   </Typography>
                                 </Box>
                               </Tooltip>
