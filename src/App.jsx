@@ -40,6 +40,7 @@ function App() {
         <Route path="/materials" element={<Materials />} />
         <Route path="/courses" element={<Courses />} />
         <Route path="/analysis" element={<Analysis />} />
+        <Route path="/endlesson" element={<EndLesson />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>

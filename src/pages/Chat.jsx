@@ -137,9 +137,9 @@ const Chat = () => {
     try {
       // Get the AI response using the regular sendMessage method
       const aiResponse = await ChatService.sendMessage(studentId, message);
-      navigate('/EndLesson')
       if (aiResponse === "complete") {
-      }
+          navigate('/endlesson');
+        }
       // Add the AI response to the state
       const aiMessageId = Date.now() + 1;
       setMessages(prevMessages => [...prevMessages, { id: aiMessageId, sender: 'ai', text: aiResponse }]);
