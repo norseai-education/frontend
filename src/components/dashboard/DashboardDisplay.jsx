@@ -125,7 +125,8 @@ const DashboardDisplay = () => {
     if (value >= 0.6) return '#8bc34a'; // Light Green - Advanced
     if (value >= 0.4) return '#ffc107'; // Yellow - Intermediate
     if (value >= 0.2) return '#ff9800'; // Orange - Beginner
-    return '#f44336'; // Red - Novice
+    if (value > 0) return '#f44336'; // Red - Novice (but has some progress)
+    return '#9e9e9e'; // Grey - No progress yet
   };
 
   const getNodeSize = (value) => {
@@ -478,7 +479,8 @@ const DashboardDisplay = () => {
                       { color: '#8bc34a', label: 'Advanced' },
                       { color: '#ffc107', label: 'Intermediate' },
                       { color: '#ff9800', label: 'Beginner' },
-                      { color: '#f44336', label: 'Novice' }
+                      { color: '#f44336', label: 'Novice' },
+                      { color: '#9e9e9e', label: 'No Progress' }
                     ].map((item) => (
                       <Box key={item.label} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                         <Box sx={{ width: 12, height: 12, backgroundColor: item.color, borderRadius: 1 }} />
