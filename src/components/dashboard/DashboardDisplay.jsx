@@ -118,9 +118,9 @@ const DashboardDisplay = () => {
   };
 
   const getNodeSize = (value) => {
-    // Base size + mastery bonus
-    const baseSize = 8;
-    const masteryBonus = Math.round(value * 12);
+    // Consistent width for touching bars, with slight variation based on mastery
+    const baseSize = 12;
+    const masteryBonus = Math.round(value * 4);
     return Math.max(baseSize, baseSize + masteryBonus);
   };
 
@@ -249,7 +249,7 @@ const DashboardDisplay = () => {
                       display: 'flex', 
                       alignItems: 'end', 
                       height: '100%', 
-                      gap: 1, 
+                      gap: 0, // Remove gap to make bars touch
                       px: 1,
                       overflowX: 'auto',
                       '&::-webkit-scrollbar': {
@@ -297,38 +297,20 @@ const DashboardDisplay = () => {
                                     alignItems: 'center',
                                     cursor: 'pointer',
                                     transition: 'all 0.3s ease',
+                                    minWidth: nodeSize, // Ensure consistent width
                                     '&:hover': {
-                                      transform: 'scale(1.1)',
+                                      transform: 'scale(1.05)',
                                       zIndex: 10,
                                     }
                                   }}
                                 >
-                                  {/* Concept Label - Tiny Font */}
-                                  <Typography 
-                                    variant="caption" 
-                                    sx={{ 
-                                      color: 'rgba(255,255,255,0.7)',
-                                      fontSize: '8px',
-                                      writingMode: 'vertical-rl',
-                                      textOrientation: 'mixed',
-                                      height: '20px',
-                                      overflow: 'hidden',
-                                      textOverflow: 'ellipsis',
-                                      whiteSpace: 'nowrap',
-                                      maxWidth: '20px',
-                                      mb: 0.5
-                                    }}
-                                  >
-                                    {concept.length > 8 ? concept.substring(0, 8) + '...' : concept}
-                                  </Typography>
-                                  
                                   {/* Node/Bar */}
                                   <Box
                                     sx={{
                                       width: nodeSize,
                                       height: nodeHeight,
                                       backgroundColor: nodeColor,
-                                      borderRadius: '4px 4px 0 0',
+                                      borderRadius: '2px 2px 0 0', // Smaller border radius for touching bars
                                       position: 'relative',
                                       transition: 'all 0.3s ease',
                                       boxShadow: nearComplete ? '0 0 20px rgba(76, 175, 80, 0.6)' : '0 2px 8px rgba(0,0,0,0.3)',
@@ -340,7 +322,7 @@ const DashboardDisplay = () => {
                                         left: -2,
                                         right: -2,
                                         bottom: -2,
-                                        borderRadius: '6px 6px 0 0',
+                                        borderRadius: '4px 4px 0 0',
                                         background: `linear-gradient(45deg, ${nodeColor}, transparent, ${nodeColor})`,
                                         zIndex: -1,
                                         animation: `${pulse} 2s ease-in-out infinite`,
@@ -355,13 +337,33 @@ const DashboardDisplay = () => {
                                   {/* Ground Line */}
                                   <Box
                                     sx={{
-                                      width: nodeSize + 4,
-                                      height: 2,
+                                      width: nodeSize,
+                                      height: 1,
                                       backgroundColor: 'rgba(255,255,255,0.3)',
-                                      borderRadius: 1,
-                                      mt: 0.5
+                                      borderRadius: 0.5,
                                     }}
                                   />
+                                  
+                                  {/* Concept Label - Below the bar */}
+                                  <Typography 
+                                    variant="caption" 
+                                    sx={{ 
+                                      color: 'rgba(255,255,255,0.7)',
+                                      fontSize: '7px',
+                                      writingMode: 'vertical-rl',
+                                      textOrientation: 'mixed',
+                                      height: '30px',
+                                      overflow: 'hidden',
+                                      textOverflow: 'ellipsis',
+                                      whiteSpace: 'nowrap',
+                                      maxWidth: '15px',
+                                      mt: 0.5,
+                                      lineHeight: 1,
+                                      textAlign: 'center'
+                                    }}
+                                  >
+                                    {concept.length > 6 ? concept.substring(0, 6) + '...' : concept}
+                                  </Typography>
                                 </Box>
                               </Tooltip>
                             </Fade>
