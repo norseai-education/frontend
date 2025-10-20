@@ -18,6 +18,7 @@ import AssessmentService from '../../services/assessmentService';
 import ChatService from '../../services/chatService';
 import UserService from '../../services/userService';
 import UserGraphService from '../../services/userGraphService';
+import classesService from '../../services/classesService';
 import { keyframes } from '@mui/system';
 
 const pulse = keyframes`
@@ -55,6 +56,10 @@ const DashboardDisplay = () => {
   const [graphLoading, setGraphLoading] = useState(false);
   const [graphError, setGraphError] = useState(null);
   const [learningObjective, setLearningObjective] = useState('');
+  const [availableClasses, setAvailableClasses] = useState([]);
+  const [myClasses, setMyClasses] = useState([]);
+  const [classesLoading, setClassesLoading] = useState(false);
+  const [classesError, setClassesError] = useState(null);
   useEffect(() => {
     const fetchStudentId = async () => {
       if (user?.email) {
@@ -111,6 +116,41 @@ const DashboardDisplay = () => {
       }
     };
     fetchCloseConcepts();
+  }, [studentId]);
+
+  // Fetch available classes
+  useEffect(() => {
+    const fetchAvailableClasses = async () => {
+      try {
+        setClassesLoading(true);
+        const response = await classesService.getAvailableClasses();
+        setAvailableClasses(response);
+      } catch (error) {
+        console.error('Error fetching available classes:', error);
+        setClassesError('Failed to load available classes.');
+      } finally {
+        setClassesLoading(false);
+      }
+    };
+    fetchAvailableClasses();
+  }, []);
+
+  // Fetch my classes
+  useEffect(() => {
+    const fetchMyClasses = async () => {
+      if (!studentId) return;
+      try {
+        setClassesLoading(true);
+        const response = await classesService.getMyClasses(studentId);
+        setMyClasses(response);
+      } catch (error) {
+        console.error('Error fetching my classes:', error);
+        setClassesError('Failed to load my classes.');
+      } finally {
+        setClassesLoading(false);
+      }
+    };
+    fetchMyClasses();
   }, [studentId]);
 
   // Helper functions for gamified userGraph visualization
@@ -174,6 +214,40 @@ const DashboardDisplay = () => {
       }
     } catch (error) {
       console.error('Error checking assessment:', error);
+    }
+  };
+
+  const addClass = async (classId) => {
+    if (!studentId) {
+      console.error('Student ID not available');
+      return;
+    }
+
+    try {
+      await classesService.addClasses(studentId, classId);
+      // Refresh my classes after adding
+      const response = await classesService.getMyClasses(studentId);
+      setMyClasses(response);
+    } catch (error) {
+      console.error('Error adding class:', error);
+      setClassesError('Failed to add class. Please try again.');
+    }
+  };
+
+  const removeClass = async (classId) => {
+    if (!studentId) {
+      console.error('Student ID not available');
+      return;
+    }
+
+    try {
+      await classesService.removeClass(studentId);
+      // Refresh my classes after removing
+      const response = await classesService.getMyClasses(studentId);
+      setMyClasses(response);
+    } catch (error) {
+      console.error('Error removing class:', error);
+      setClassesError('Failed to remove class. Please try again.');
     }
   };
 
@@ -288,6 +362,128 @@ const DashboardDisplay = () => {
                     <Typography color="text.secondary">No knowledge data yet. Start a lesson to build your graph.</Typography>
                   )}
                 </Box>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        {/* Courses Area Card */}
+        <Grid item xs={12} md={6}>
+          <Card sx={{ minWidth: 300, minHeight: 350, display: 'flex', flexDirection: 'column' }}>
+            <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', p: 2 }}>
+              <Box sx={{ width: '100%' }}>
+                <Typography variant="h5" component="div">
+                  Courses
+                </Typography>
+                <Typography sx={{ mt: 1 }} color="text.secondary">
+                  Manage your classes and explore available courses
+                </Typography>
+                
+                {classesLoading ? (
+                  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 120, mt: 2 }}>
+                    <CircularProgress size={24} />
+                  </Box>
+                ) : classesError ? (
+                  <Typography color="error" sx={{ mt: 2 }}>{classesError}</Typography>
+                ) : (
+                  <Box sx={{ mt: 2 }}>
+                    {/* My Classes Section */}
+                    <Typography variant="h6" sx={{ mb: 1, color: 'primary.main' }}>
+                      My Classes
+                    </Typography>
+                    {myClasses && myClasses.class_names && myClasses.class_names.length > 0 ? (
+                      <Box sx={{ mb: 3 }}>
+                        {myClasses.class_names.map((className, index) => (
+                          <Box key={index} sx={{ 
+                            display: 'flex', 
+                            justifyContent: 'space-between', 
+                            alignItems: 'center',
+                            p: 1,
+                            mb: 1,
+                            backgroundColor: 'rgba(25, 118, 210, 0.1)',
+                            borderRadius: 1,
+                            border: '1px solid rgba(25, 118, 210, 0.2)'
+                          }}>
+                            <Box>
+                              <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                                {className}
+                              </Typography>
+                              {myClasses.class_descriptions && myClasses.class_descriptions[index] && (
+                                <Typography variant="caption" color="text.secondary">
+                                  {myClasses.class_descriptions[index]}
+                                </Typography>
+                              )}
+                            </Box>
+                            <Button
+                              size="small"
+                              color="error"
+                              variant="outlined"
+                              onClick={() => removeClass(myClasses.class_ids[index])}
+                              sx={{ minWidth: 'auto', px: 1 }}
+                            >
+                              Remove
+                            </Button>
+                          </Box>
+                        ))}
+                      </Box>
+                    ) : (
+                      <Typography variant="body2" color="text.secondary" sx={{ mb: 3, fontStyle: 'italic' }}>
+                        No classes enrolled yet. Browse available classes below.
+                      </Typography>
+                    )}
+
+                    {/* Available Classes Section */}
+                    <Typography variant="h6" sx={{ mb: 1, color: 'primary.main' }}>
+                      Available Classes
+                    </Typography>
+                    {availableClasses && availableClasses.class_names && availableClasses.class_names.length > 0 ? (
+                      <Box sx={{ maxHeight: 200, overflowY: 'auto' }}>
+                        {availableClasses.class_names.map((className, index) => {
+                          const classId = availableClasses.class_ids[index];
+                          const isEnrolled = myClasses && myClasses.class_ids && myClasses.class_ids.includes(classId);
+                          
+                          return (
+                            <Box key={index} sx={{ 
+                              display: 'flex', 
+                              justifyContent: 'space-between', 
+                              alignItems: 'center',
+                              p: 1,
+                              mb: 1,
+                              backgroundColor: isEnrolled ? 'rgba(76, 175, 80, 0.1)' : 'rgba(158, 158, 158, 0.1)',
+                              borderRadius: 1,
+                              border: `1px solid ${isEnrolled ? 'rgba(76, 175, 80, 0.2)' : 'rgba(158, 158, 158, 0.2)'}`
+                            }}>
+                              <Box>
+                                <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                                  {className}
+                                </Typography>
+                                {availableClasses.class_descriptions && availableClasses.class_descriptions[index] && (
+                                  <Typography variant="caption" color="text.secondary">
+                                    {availableClasses.class_descriptions[index]}
+                                  </Typography>
+                                )}
+                              </Box>
+                              <Button
+                                size="small"
+                                color={isEnrolled ? "success" : "primary"}
+                                variant={isEnrolled ? "outlined" : "contained"}
+                                onClick={() => !isEnrolled && addClass(classId)}
+                                disabled={isEnrolled || !studentId}
+                                sx={{ minWidth: 'auto', px: 1 }}
+                              >
+                                {isEnrolled ? 'Enrolled' : 'Add'}
+                              </Button>
+                            </Box>
+                          );
+                        })}
+                      </Box>
+                    ) : (
+                      <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>
+                        No available classes found.
+                      </Typography>
+                    )}
+                  </Box>
+                )}
               </Box>
             </CardContent>
           </Card>
