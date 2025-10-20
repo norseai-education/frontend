@@ -89,6 +89,25 @@ class classesService {
       throw error;
     }
   }
+
+  /**
+   * delete class
+   * @param {string} class_id - Class ID
+   * @returns {Promise<{message: string}>}
+   */
+  static async deleteClass(class_id) {
+    try {
+      const response = await apiClient.delete(`/classes/delete_class`, {
+        data: {
+          class_id: class_id
+        }
+      });
+      return response.data.message;
+    } catch (error) {
+      console.error('Delete class error:', error);
+      throw error;
+    }
+  }
 }
 
 
