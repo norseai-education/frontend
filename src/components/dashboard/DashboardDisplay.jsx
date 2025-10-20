@@ -393,38 +393,57 @@ const DashboardDisplay = () => {
                     </Typography>
                     {myClasses && myClasses.class_names && myClasses.class_names.length > 0 ? (
                       <Box sx={{ mb: 3 }}>
-                        {myClasses.class_names.map((className, index) => (
-                          <Box key={index} sx={{ 
-                            display: 'flex', 
-                            justifyContent: 'space-between', 
-                            alignItems: 'center',
-                            p: 1,
-                            mb: 1,
-                            backgroundColor: 'rgba(25, 118, 210, 0.1)',
-                            borderRadius: 1,
-                            border: '1px solid rgba(25, 118, 210, 0.2)'
-                          }}>
-                            <Box>
-                              <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-                                {className}
-                              </Typography>
-                              {myClasses.class_descriptions && myClasses.class_descriptions[index] && (
-                                <Typography variant="caption" color="text.secondary">
-                                  {myClasses.class_descriptions[index]}
+                        {myClasses.class_names.map((className, index) => {
+                          const classId = myClasses.class_ids[index];
+                          const isAMC8 = classId === "646f1ec2-40e3-4528-8d7e-dd3a408ff1b3";
+                          
+                          return (
+                            <Box key={index} sx={{ 
+                              display: 'flex', 
+                              justifyContent: 'space-between', 
+                              alignItems: 'center',
+                              p: 1,
+                              mb: 1,
+                              backgroundColor: 'rgba(25, 118, 210, 0.1)',
+                              borderRadius: 1,
+                              border: '1px solid rgba(25, 118, 210, 0.2)'
+                            }}>
+                              <Box>
+                                <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                                  {className}
                                 </Typography>
-                              )}
+                                {myClasses.class_descriptions && myClasses.class_descriptions[index] && (
+                                  <Typography variant="caption" color="text.secondary">
+                                    {myClasses.class_descriptions[index]}
+                                  </Typography>
+                                )}
+                              </Box>
+                              <Box sx={{ display: 'flex', gap: 1 }}>
+                                {isAMC8 && (
+                                  <Button
+                                    size="small"
+                                    color="primary"
+                                    variant="contained"
+                                    onClick={startLesson}
+                                    disabled={!studentId}
+                                    sx={{ minWidth: 'auto', px: 1 }}
+                                  >
+                                    Start Lesson
+                                  </Button>
+                                )}
+                                <Button
+                                  size="small"
+                                  color="error"
+                                  variant="outlined"
+                                  onClick={() => removeClass(classId)}
+                                  sx={{ minWidth: 'auto', px: 1 }}
+                                >
+                                  Remove
+                                </Button>
+                              </Box>
                             </Box>
-                            <Button
-                              size="small"
-                              color="error"
-                              variant="outlined"
-                              onClick={() => removeClass(myClasses.class_ids[index])}
-                              sx={{ minWidth: 'auto', px: 1 }}
-                            >
-                              Remove
-                            </Button>
-                          </Box>
-                        ))}
+                          );
+                        })}
                       </Box>
                     ) : (
                       <Typography variant="body2" color="text.secondary" sx={{ mb: 3, fontStyle: 'italic' }}>
