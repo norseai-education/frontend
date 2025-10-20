@@ -51,9 +51,13 @@ class ChatService {
       if (parsedData.type === 'ai_response') {
         return parsedData.content;
       }
-      else {
-        return "complete"
+      if (parsedData.type === 'lesson_complete'){
+        return "complete";
       }
+      if (parsedData.type === 'error'){
+        return parsedData.content;
+      }
+      return parsedData.content;
     } catch (error) {
       console.error('Send message error:', error);
       throw error;
