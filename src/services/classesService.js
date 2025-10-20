@@ -79,7 +79,9 @@ class classesService {
   static async removeClass(student_id, class_id) {
     try {
       const response = await apiClient.delete(`/classes/remove_class/${student_id}`, {
+        data: {
           class_id: class_id
+        }
       });
       return response.data.message;
     } catch (error) {
