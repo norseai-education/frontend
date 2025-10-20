@@ -241,7 +241,7 @@ const DashboardDisplay = () => {
     }
 
     try {
-      await classesService.removeClass(studentId);
+      await classesService.removeClass(studentId, classId);
       // Refresh my classes after removing
       const response = await classesService.getMyClasses(studentId);
       setMyClasses(response);
