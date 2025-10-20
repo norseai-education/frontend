@@ -42,8 +42,6 @@ const glow = keyframes`
   }
 `;
 
-const cardData = [
-  { title: 'AMC 8', content: 'View and manage student assessments.', button: 'Start Lesson' }];
 
 const DashboardDisplay = () => {
   const navigate = useNavigate();
@@ -262,32 +260,6 @@ const DashboardDisplay = () => {
   return (
     <Box sx={{ flexGrow: 1, p: 3 }}>
       <Grid container spacing={4}>
-        {/* AMC8 Start Lesson Card - Now at the top */}
-        {cardData.map((card, index) => (
-          <Grid item xs={12} sm={6} md={4} key={index}>
-            <Card sx={{ minWidth: 300, height: 350, display: 'flex', flexDirection: 'column' }}>
-              <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', p: 2 }}>
-                <Box>
-                  <Typography variant="h5" component="div">
-                    {card.title}
-                  </Typography>
-                  <Typography sx={{ mt: 1.5 }} color="text.secondary">
-                    {card.content}
-                  </Typography>
-                </Box>
-                <Button 
-                  variant="contained" 
-                  color="primary" 
-                  onClick={startLesson}
-                  disabled={!studentId}
-                  sx={{ mt: 2, alignSelf: 'flex-start' }}
-                >
-                  {card.button}
-                </Button>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
 
         {/* Close Concepts Card - Detailed Progress */}
         <Grid item xs={12} md={6}>
