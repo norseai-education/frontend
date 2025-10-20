@@ -76,9 +76,11 @@ class classesService {
    * @param {string} class_id - Class ID
    * @returns {Promise<{message: string}>}
    */
-  static async removeClass(student_id) {
+  static async removeClass(student_id, class_id) {
     try {
-      const response = await apiClient.delete(`/classes/remove_class/${student_id}`);
+      const response = await apiClient.delete(`/classes/remove_class/${student_id}`, {
+          class_id: class_id
+      });
       return response.data.message;
     } catch (error) {
       console.error('Remove classes error:', error);
