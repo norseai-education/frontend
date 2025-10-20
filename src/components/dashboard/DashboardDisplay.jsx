@@ -616,9 +616,9 @@ const DashboardDisplay = () => {
                   ) : (
                     <Box sx={{ textAlign: 'center', mt: 4 }}>
                       <Typography sx={{ color: 'rgba(255,255,255,0.8)', mb: 2 }}>
-                        No knowledge data yet. Start a lesson to build your graph.
+                        No knowledge data yet. Add a course to build your graph.
                       </Typography>
-                      <Button 
+                      {/* <Button 
                         variant="contained" 
                         onClick={startLesson}
                         disabled={!studentId}
@@ -631,7 +631,7 @@ const DashboardDisplay = () => {
                         }}
                       >
                         Start Your Journey
-                      </Button>
+                      </Button> */}
                     </Box>
                   )}
                 </Box>
