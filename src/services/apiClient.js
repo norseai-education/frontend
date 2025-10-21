@@ -7,7 +7,7 @@ const API_BASE_URL = 'https://norseai.sunshinek12.com/api';
 // Create axios instance with default config
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 30000,
+  timeout: 45000,
   headers: {
     'Content-Type': 'application/json',
   },
