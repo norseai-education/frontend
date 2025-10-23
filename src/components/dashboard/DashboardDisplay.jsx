@@ -261,7 +261,7 @@ const DashboardDisplay = () => {
     <Box sx={{ flexGrow: 1, p: 3 }}>
       <Grid container spacing={4}>
 
-        {/* Courses Area Card */}
+        {/* Left Column - Courses Area Card */}
         <Grid item xs={12} md={6}>
           <Card sx={{ minWidth: 300, minHeight: 350, display: 'flex', flexDirection: 'column' }}>
             <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', p: 2 }}>
@@ -402,85 +402,85 @@ const DashboardDisplay = () => {
           </Card>
         </Grid>
 
-        {/* Close Concepts Card - Detailed Progress */}
+        {/* Right Column - Progress and Your Graph */}
         <Grid item xs={12} md={6}>
-          <Card sx={{ minWidth: 300, height: 400, display: 'flex', flexDirection: 'column' }}>
-            <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', p: 2 }}>
-              <Box sx={{ width: '100%' }}>
-                <Typography variant="h5" component="div">
-                  Progress
-                </Typography>
-                <Typography sx={{ mt: 1 }} color="text.secondary">
-                  Top concepts based on your current graph
-                </Typography>
-                <Box sx={{ mt: 2 }}>
-                  {graphLoading ? (
-                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 120 }}>
-                      <CircularProgress size={24} />
-                    </Box>
-                  ) : graphError ? (
-                    <Typography color="error">{graphError}</Typography>
-                  ) : closeConcepts && Object.keys(closeConcepts).length > 0 ? (
-                    <Box>
-                      {Object.entries(closeConcepts)
-                        .slice(0, 10)
-                        .map(([concept, value]) => {
-                          const pct = Math.max(0, Math.min(100, Math.round(Number(value ?? 0) * 100)));
-                          const isCurrentLearningObjective = learningObjective && concept.toLowerCase() === learningObjective.toLowerCase();
-                          
-                          return (
-                            <Box key={concept} sx={{ mb: 1.5 }}>
-                              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-                                <Typography 
-                                  variant="body2" 
-                                  sx={{ 
-                                    pr: 1, 
-                                    overflow: 'hidden', 
-                                    textOverflow: 'ellipsis', 
-                                    whiteSpace: 'nowrap',
-                                    color: isCurrentLearningObjective ? '#9c27b0' : 'inherit',
-                                    fontWeight: isCurrentLearningObjective ? 'bold' : 'normal',
-                                    position: 'relative'
-                                  }} 
-                                  title={concept}
-                                >
-                                  {isCurrentLearningObjective && '🎯 '}
-                                  {concept}
-                                </Typography>
-                                <Typography 
-                                  variant="body2" 
-                                  sx={{ 
-                                    color: isCurrentLearningObjective ? '#9c27b0' : 'text.secondary',
-                                    fontWeight: isCurrentLearningObjective ? 'bold' : 'normal'
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            {/* Close Concepts Card - Detailed Progress */}
+            <Card sx={{ minWidth: 300, height: 400, display: 'flex', flexDirection: 'column' }}>
+              <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', p: 2 }}>
+                <Box sx={{ width: '100%' }}>
+                  <Typography variant="h5" component="div">
+                    Progress
+                  </Typography>
+                  <Typography sx={{ mt: 1 }} color="text.secondary">
+                    Top concepts based on your current graph
+                  </Typography>
+                  <Box sx={{ mt: 2 }}>
+                    {graphLoading ? (
+                      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 120 }}>
+                        <CircularProgress size={24} />
+                      </Box>
+                    ) : graphError ? (
+                      <Typography color="error">{graphError}</Typography>
+                    ) : closeConcepts && Object.keys(closeConcepts).length > 0 ? (
+                      <Box>
+                        {Object.entries(closeConcepts)
+                          .slice(0, 10)
+                          .map(([concept, value]) => {
+                            const pct = Math.max(0, Math.min(100, Math.round(Number(value ?? 0) * 100)));
+                            const isCurrentLearningObjective = learningObjective && concept.toLowerCase() === learningObjective.toLowerCase();
+                            
+                            return (
+                              <Box key={concept} sx={{ mb: 1.5 }}>
+                                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                                  <Typography 
+                                    variant="body2" 
+                                    sx={{ 
+                                      pr: 1, 
+                                      overflow: 'hidden', 
+                                      textOverflow: 'ellipsis', 
+                                      whiteSpace: 'nowrap',
+                                      color: isCurrentLearningObjective ? '#9c27b0' : 'inherit',
+                                      fontWeight: isCurrentLearningObjective ? 'bold' : 'normal',
+                                      position: 'relative'
+                                    }} 
+                                    title={concept}
+                                  >
+                                    {isCurrentLearningObjective && '🎯 '}
+                                    {concept}
+                                  </Typography>
+                                  <Typography 
+                                    variant="body2" 
+                                    sx={{ 
+                                      color: isCurrentLearningObjective ? '#9c27b0' : 'text.secondary',
+                                      fontWeight: isCurrentLearningObjective ? 'bold' : 'normal'
+                                    }}
+                                  >
+                                    {pct}%
+                                  </Typography>
+                                </Box>
+                                <LinearProgress 
+                                  variant="determinate" 
+                                  value={pct}
+                                  sx={{
+                                    '& .MuiLinearProgress-bar': {
+                                      backgroundColor: isCurrentLearningObjective ? '#9c27b0' : undefined,
+                                    }
                                   }}
-                                >
-                                  {pct}%
-                                </Typography>
+                                />
                               </Box>
-                              <LinearProgress 
-                                variant="determinate" 
-                                value={pct}
-                                sx={{
-                                  '& .MuiLinearProgress-bar': {
-                                    backgroundColor: isCurrentLearningObjective ? '#9c27b0' : undefined,
-                                  }
-                                }}
-                              />
-                            </Box>
-                          );
-                        })}
-                    </Box>
-                  ) : (
-                    <Typography color="text.secondary">No knowledge data yet. Start a lesson to build your graph.</Typography>
-                  )}
+                            );
+                          })}
+                      </Box>
+                    ) : (
+                      <Typography color="text.secondary">No knowledge data yet. Start a lesson to build your graph.</Typography>
+                    )}
+                  </Box>
                 </Box>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
+              </CardContent>
+            </Card>
 
-        {/* Visual Knowledge Graph Card - Visual Overview */}
-        <Grid item xs={12} md={6}>
+            {/* Visual Knowledge Graph Card - Visual Overview */}
           <Card sx={{ minWidth: 300, height: 400, display: 'flex', flexDirection: 'column' }}>
             <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', p: 2 }}>
               <Box sx={{ width: '100%' }}>
@@ -658,6 +658,7 @@ const DashboardDisplay = () => {
               </Box>
             </CardContent>
           </Card>
+          </Box>
         </Grid>
 
       </Grid>
