@@ -262,7 +262,7 @@ const DashboardDisplay = () => {
       <Box sx={{ display: 'flex', gap: 4, flexDirection: { xs: 'column', lg: 'row' } }}>
 
         {/* Left Column - Courses Area Card */}
-        <Box sx={{ flex: '0 0 60%', minWidth: 0 }}>
+        <Box sx={{ flex: '0 0 55%', minWidth: 0 }}>
           <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
             <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', p: 2 }}>
               <Box sx={{ width: '100%' }}>
@@ -403,9 +403,10 @@ const DashboardDisplay = () => {
         </Box>
 
         {/* Right Column - Progress and Your Graph */}
-        <Box sx={{ flex: '0 0 40%', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 4 }}>
+        <Box sx={{ flex: '0 0 45%', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 4 }}>
             {/* Close Concepts Card - Detailed Progress */}
-            <Card sx={{ minWidth: 300, height: '66.67%', display: 'flex', flexDirection: 'column' }}>
+            <Box sx={{ width: '66.67%' }}>
+              <Card sx={{ minWidth: 300, height: 400, display: 'flex', flexDirection: 'column' }}>
               <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', p: 2 }}>
                 <Box sx={{ width: '100%' }}>
                   <Typography variant="h5" component="div">
@@ -473,14 +474,15 @@ const DashboardDisplay = () => {
                       </Box>
                     ) : (
                       <Typography color="text.secondary">No knowledge data yet. Start a lesson to build your graph.</Typography>
-                    )}
-                  </Box>
+                  )}
                 </Box>
-              </CardContent>
-            </Card>
+              </Box>
+            </CardContent>
+          </Card>
+            </Box>
 
             {/* Visual Knowledge Graph Card - Visual Overview */}
-          <Card sx={{ minWidth: 300, height: '33.33%', display: 'flex', flexDirection: 'column' }}>
+          <Card sx={{ minWidth: 300, height: 400, display: 'flex', flexDirection: 'column' }}>
             <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', p: 2 }}>
               <Box sx={{ width: '100%' }}>
                 <Typography variant="h5" component="div" sx={{ color: 'white', fontWeight: 'bold' }}>
