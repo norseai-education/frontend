@@ -282,7 +282,6 @@ const DashboardDisplay = () => {
                   ) : closeConcepts && Object.keys(closeConcepts).length > 0 ? (
                     <Box>
                       {Object.entries(closeConcepts)
-                        .sort((a, b) => (b[1] ?? 0) - (a[1] ?? 0))
                         .slice(0, 10)
                         .map(([concept, value]) => {
                           const pct = Math.max(0, Math.min(100, Math.round(Number(value ?? 0) * 100)));
@@ -370,7 +369,6 @@ const DashboardDisplay = () => {
                       justifyContent: 'flex-start',
                     }}>
                       {Object.entries(userGraph)
-                        .sort((a, b) => b[1] - a[1]) // Sort by mastery level
                         .map(([concept, value], index) => {
                           const masteryValue = Math.max(0, Math.min(1, Number(value) || 0));
                           const nodeHeight = getNodeHeight(masteryValue);
