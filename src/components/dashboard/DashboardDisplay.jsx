@@ -259,11 +259,11 @@ const DashboardDisplay = () => {
 
   return (
     <Box sx={{ flexGrow: 1, p: 3 }}>
-      <Grid container spacing={4}>
+      <Grid container spacing={4} sx={{ height: '100%' }}>
 
         {/* Left Column - Courses Area Card */}
-        <Grid item xs={12} md={6}>
-          <Card sx={{ minWidth: 300, minHeight: 350, display: 'flex', flexDirection: 'column' }}>
+        <Grid item xs={12} lg={6} sx={{ display: 'flex', flexDirection: 'column' }}>
+          <Card sx={{ minWidth: 300, height: '100%', display: 'flex', flexDirection: 'column' }}>
             <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', p: 2 }}>
               <Box sx={{ width: '100%' }}>
                 <Typography variant="h5" component="div">
@@ -403,7 +403,7 @@ const DashboardDisplay = () => {
         </Grid>
 
         {/* Right Column - Progress and Your Graph */}
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} lg={6} sx={{ display: 'flex', flexDirection: 'column' }}>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             {/* Close Concepts Card - Detailed Progress */}
             <Card sx={{ minWidth: 300, height: 400, display: 'flex', flexDirection: 'column' }}>
