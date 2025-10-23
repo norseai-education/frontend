@@ -307,7 +307,7 @@ const DashboardDisplay = () => {
                                   {className}
                                 </Typography>
                                 {myClasses.class_descriptions && myClasses.class_descriptions[index] && (
-                                  <Typography variant="caption" color="text.secondary">
+                                  <Typography variant="body2" color="text.secondary">
                                     {myClasses.class_descriptions[index]}
                                   </Typography>
                                 )}
@@ -371,7 +371,7 @@ const DashboardDisplay = () => {
                                   {className}
                                 </Typography>
                                 {availableClasses.class_descriptions && availableClasses.class_descriptions[index] && (
-                                  <Typography variant="caption" color="text.secondary">
+                                  <Typography variant="body2" color="text.secondary">
                                     {availableClasses.class_descriptions[index]}
                                   </Typography>
                                 )}
@@ -410,7 +410,10 @@ const DashboardDisplay = () => {
               <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', p: 2 }}>
                 <Box sx={{ width: '100%' }}>
                   <Typography variant="h5" component="div">
-                    Progress
+                    {myClasses && myClasses.class_names && myClasses.class_names.length > 0 
+                      ? `${myClasses.class_names[0]} Progress` 
+                      : 'Progress'
+                    }
                   </Typography>
                   <Typography sx={{ mt: 1 }} color="text.secondary">
                     Top concepts based on your current graph
