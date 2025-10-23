@@ -263,7 +263,7 @@ const DashboardDisplay = () => {
 
         {/* Close Concepts Card - Detailed Progress */}
         <Grid item xs={12} md={6}>
-          <Card sx={{ minWidth: 300, minHeight: 350, display: 'flex', flexDirection: 'column' }}>
+          <Card sx={{ minWidth: 300, height: 400, display: 'flex', flexDirection: 'column' }}>
             <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', p: 2 }}>
               <Box sx={{ width: '100%' }}>
                 <Typography variant="h5" component="div">
@@ -341,8 +341,8 @@ const DashboardDisplay = () => {
 
         {/* Visual Knowledge Graph Card - Visual Overview */}
         <Grid item xs={12} md={6}>
-          <Card sx={{ minWidth: 300, minHeight: 350, display: 'flex', flexDirection: 'column' }}>
-            <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', p: 2 }}>
+          <Card sx={{ minWidth: 300, height: 400, display: 'flex', flexDirection: 'column' }}>
+            <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', p: 2 }}>
               <Box sx={{ width: '100%' }}>
                 <Typography variant="h5" component="div" sx={{ color: 'white', fontWeight: 'bold' }}>
                   Your Graph
