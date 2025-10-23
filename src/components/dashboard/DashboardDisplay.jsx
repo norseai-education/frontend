@@ -339,147 +339,6 @@ const DashboardDisplay = () => {
           </Card>
         </Grid>
 
-        {/* Courses Area Card */}
-        <Grid item xs={12} md={6}>
-          <Card sx={{ minWidth: 300, minHeight: 350, display: 'flex', flexDirection: 'column' }}>
-            <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', p: 2 }}>
-              <Box sx={{ width: '100%' }}>
-                <Typography variant="h5" component="div">
-                  Courses
-                </Typography>
-                <Typography sx={{ mt: 1 }} color="text.secondary">
-                  Manage your classes and explore available courses
-                </Typography>
-                
-                {classesLoading ? (
-                  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 120, mt: 2 }}>
-                    <CircularProgress size={24} />
-                  </Box>
-                ) : classesError ? (
-                  <Typography color="error" sx={{ mt: 2 }}>{classesError}</Typography>
-                ) : (
-                  <Box sx={{ mt: 2 }}>
-                    {/* My Classes Section */}
-                    <Typography variant="h6" sx={{ mb: 1, color: 'primary.main' }}>
-                      My Classes
-                    </Typography>
-                    {myClasses && myClasses.class_names && myClasses.class_names.length > 0 ? (
-                      <Box sx={{ mb: 3 }}>
-                        {myClasses.class_names.map((className, index) => {
-                          const classId = myClasses.class_ids[index];
-                          const isAMC8 = classId === "646f1ec2-40e3-4528-8d7e-dd3a408ff1b3";
-                          
-                          return (
-                            <Box key={index} sx={{ 
-                              display: 'flex', 
-                              justifyContent: 'space-between', 
-                              alignItems: 'center',
-                              p: 1,
-                              mb: 1,
-                              backgroundColor: 'rgba(25, 118, 210, 0.1)',
-                              borderRadius: 1,
-                              border: '1px solid rgba(25, 118, 210, 0.2)'
-                            }}>
-                              <Box>
-                                <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-                                  {className}
-                                </Typography>
-                                {myClasses.class_descriptions && myClasses.class_descriptions[index] && (
-                                  <Typography variant="caption" color="text.secondary">
-                                    {myClasses.class_descriptions[index]}
-                                  </Typography>
-                                )}
-                              </Box>
-                              <Box sx={{ display: 'flex', gap: 1 }}>
-                                {isAMC8 && (
-                                  <Button
-                                    size="small"
-                                    color="primary"
-                                    variant="contained"
-                                    onClick={startLesson}
-                                    disabled={!studentId}
-                                    sx={{ minWidth: 'auto', px: 1 }}
-                                  >
-                                    Start Lesson
-                                  </Button>
-                                )}
-                                <Button
-                                  size="small"
-                                  color="error"
-                                  variant="outlined"
-                                  onClick={() => removeClass(classId)}
-                                  sx={{ minWidth: 'auto', px: 1 }}
-                                >
-                                  Remove
-                                </Button>
-                              </Box>
-                            </Box>
-                          );
-                        })}
-                      </Box>
-                    ) : (
-                      <Typography variant="body2" color="text.secondary" sx={{ mb: 3, fontStyle: 'italic' }}>
-                        No classes enrolled yet. Browse available classes below.
-                      </Typography>
-                    )}
-
-                    {/* Available Classes Section */}
-                    <Typography variant="h6" sx={{ mb: 1, color: 'primary.main' }}>
-                      Available Classes
-                    </Typography>
-                    {availableClasses && availableClasses.class_names && availableClasses.class_names.length > 0 ? (
-                      <Box sx={{ maxHeight: 200, overflowY: 'auto' }}>
-                        {availableClasses.class_names.map((className, index) => {
-                          const classId = availableClasses.class_ids[index];
-                          const isEnrolled = myClasses && myClasses.class_ids && myClasses.class_ids.includes(classId);
-                          
-                          return (
-                            <Box key={index} sx={{ 
-                              display: 'flex', 
-                              justifyContent: 'space-between', 
-                              alignItems: 'center',
-                              p: 1,
-                              mb: 1,
-                              backgroundColor: isEnrolled ? 'rgba(76, 175, 80, 0.1)' : 'rgba(158, 158, 158, 0.1)',
-                              borderRadius: 1,
-                              border: `1px solid ${isEnrolled ? 'rgba(76, 175, 80, 0.2)' : 'rgba(158, 158, 158, 0.2)'}`
-                            }}>
-                              <Box>
-                                <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-                                  {className}
-                                </Typography>
-                                {availableClasses.class_descriptions && availableClasses.class_descriptions[index] && (
-                                  <Typography variant="caption" color="text.secondary">
-                                    {availableClasses.class_descriptions[index]}
-                                  </Typography>
-                                )}
-                              </Box>
-                              <Button
-                                size="small"
-                                color={isEnrolled ? "success" : "primary"}
-                                variant={isEnrolled ? "outlined" : "contained"}
-                                onClick={() => !isEnrolled && addClass(classId)}
-                                disabled={isEnrolled || !studentId}
-                                sx={{ minWidth: 'auto', px: 1 }}
-                              >
-                                {isEnrolled ? 'Enrolled' : 'Add'}
-                              </Button>
-                            </Box>
-                          );
-                        })}
-                      </Box>
-                    ) : (
-                      <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>
-                        No available classes found.
-                      </Typography>
-                    )}
-                  </Box>
-                )}
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-
         {/* Visual Knowledge Graph Card - Visual Overview */}
         <Grid item xs={12} md={6}>
           <Card sx={{ minWidth: 300, minHeight: 350, display: 'flex', flexDirection: 'column' }}>
@@ -661,6 +520,148 @@ const DashboardDisplay = () => {
             </CardContent>
           </Card>
         </Grid>
+
+        {/* Courses Area Card */}
+        <Grid item xs={12} md={6}>
+          <Card sx={{ minWidth: 300, minHeight: 350, display: 'flex', flexDirection: 'column' }}>
+            <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', p: 2 }}>
+              <Box sx={{ width: '100%' }}>
+                <Typography variant="h5" component="div">
+                  Courses
+                </Typography>
+                <Typography sx={{ mt: 1 }} color="text.secondary">
+                  Manage your classes and explore available courses
+                </Typography>
+                
+                {classesLoading ? (
+                  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 120, mt: 2 }}>
+                    <CircularProgress size={24} />
+                  </Box>
+                ) : classesError ? (
+                  <Typography color="error" sx={{ mt: 2 }}>{classesError}</Typography>
+                ) : (
+                  <Box sx={{ mt: 2 }}>
+                    {/* My Classes Section */}
+                    <Typography variant="h6" sx={{ mb: 1, color: 'primary.main' }}>
+                      My Classes
+                    </Typography>
+                    {myClasses && myClasses.class_names && myClasses.class_names.length > 0 ? (
+                      <Box sx={{ mb: 3 }}>
+                        {myClasses.class_names.map((className, index) => {
+                          const classId = myClasses.class_ids[index];
+                          const isAMC8 = classId === "646f1ec2-40e3-4528-8d7e-dd3a408ff1b3";
+                          
+                          return (
+                            <Box key={index} sx={{ 
+                              display: 'flex', 
+                              justifyContent: 'space-between', 
+                              alignItems: 'center',
+                              p: 1,
+                              mb: 1,
+                              backgroundColor: 'rgba(25, 118, 210, 0.1)',
+                              borderRadius: 1,
+                              border: '1px solid rgba(25, 118, 210, 0.2)'
+                            }}>
+                              <Box>
+                                <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                                  {className}
+                                </Typography>
+                                {myClasses.class_descriptions && myClasses.class_descriptions[index] && (
+                                  <Typography variant="caption" color="text.secondary">
+                                    {myClasses.class_descriptions[index]}
+                                  </Typography>
+                                )}
+                              </Box>
+                              <Box sx={{ display: 'flex', gap: 1 }}>
+                                {isAMC8 && (
+                                  <Button
+                                    size="small"
+                                    color="primary"
+                                    variant="contained"
+                                    onClick={startLesson}
+                                    disabled={!studentId}
+                                    sx={{ minWidth: 'auto', px: 1 }}
+                                  >
+                                    Start Lesson
+                                  </Button>
+                                )}
+                                <Button
+                                  size="small"
+                                  color="error"
+                                  variant="outlined"
+                                  onClick={() => removeClass(classId)}
+                                  sx={{ minWidth: 'auto', px: 1 }}
+                                >
+                                  Remove
+                                </Button>
+                              </Box>
+                            </Box>
+                          );
+                        })}
+                      </Box>
+                    ) : (
+                      <Typography variant="body2" color="text.secondary" sx={{ mb: 3, fontStyle: 'italic' }}>
+                        No classes enrolled yet. Browse available classes below.
+                      </Typography>
+                    )}
+
+                    {/* Available Classes Section */}
+                    <Typography variant="h6" sx={{ mb: 1, color: 'primary.main' }}>
+                      Available Classes
+                    </Typography>
+                    {availableClasses && availableClasses.class_names && availableClasses.class_names.length > 0 ? (
+                      <Box sx={{ maxHeight: 200, overflowY: 'auto' }}>
+                        {availableClasses.class_names.map((className, index) => {
+                          const classId = availableClasses.class_ids[index];
+                          const isEnrolled = myClasses && myClasses.class_ids && myClasses.class_ids.includes(classId);
+                          
+                          return (
+                            <Box key={index} sx={{ 
+                              display: 'flex', 
+                              justifyContent: 'space-between', 
+                              alignItems: 'center',
+                              p: 1,
+                              mb: 1,
+                              backgroundColor: isEnrolled ? 'rgba(76, 175, 80, 0.1)' : 'rgba(158, 158, 158, 0.1)',
+                              borderRadius: 1,
+                              border: `1px solid ${isEnrolled ? 'rgba(76, 175, 80, 0.2)' : 'rgba(158, 158, 158, 0.2)'}`
+                            }}>
+                              <Box>
+                                <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                                  {className}
+                                </Typography>
+                                {availableClasses.class_descriptions && availableClasses.class_descriptions[index] && (
+                                  <Typography variant="caption" color="text.secondary">
+                                    {availableClasses.class_descriptions[index]}
+                                  </Typography>
+                                )}
+                              </Box>
+                              <Button
+                                size="small"
+                                color={isEnrolled ? "success" : "primary"}
+                                variant={isEnrolled ? "outlined" : "contained"}
+                                onClick={() => !isEnrolled && addClass(classId)}
+                                disabled={isEnrolled || !studentId}
+                                sx={{ minWidth: 'auto', px: 1 }}
+                              >
+                                {isEnrolled ? 'Enrolled' : 'Add'}
+                              </Button>
+                            </Box>
+                          );
+                        })}
+                      </Box>
+                    ) : (
+                      <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>
+                        No available classes found.
+                      </Typography>
+                    )}
+                  </Box>
+                )}
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+
       </Grid>
     </Box>
   );
