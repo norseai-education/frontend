@@ -13,7 +13,7 @@ const Logo = () => {
       viewBox="0 0 300 120"
       xmlns="http://www.w3.org/2000/svg"
       style={{ cursor: 'pointer', height: '60px' }}
-      onClick={handleClick}
+      // onClick={handleClick}
     >
       <defs>
         <linearGradient id="heroTextGradient" x1="0%" y1="0%" x2="100%" y2="0%">
