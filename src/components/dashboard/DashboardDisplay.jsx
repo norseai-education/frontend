@@ -204,7 +204,7 @@ const DashboardDisplay = () => {
         try {
           const init = await ChatService.initializeSession(studentId);
           console.log(init);
-          navigate('/chat');
+          navigate('/chat', { state: { isFirstTime: false } });
         } catch (chatError) {
           console.error('Failed to initialize chat session:', chatError);
           setError('Failed to start lesson. Please try again.');

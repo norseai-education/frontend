@@ -24,6 +24,7 @@ import Layout from '../components/Layout';
 import ChatService from '../services/chatService';
 import UserService from '../services/userService';
 import LatexRenderer from '../components/common/LatexRenderer';
+import { useLocation } from 'react-router-dom';
 
 // Main Chat component which can be used inside a larger application
 const Chat = () => {
@@ -87,14 +88,27 @@ const Chat = () => {
       // Get initial status
       await checkStatus();
       
-      // Add welcome message
+      const location = useLocation();
+      const isFirstTime = location.state?.isFirstTime;
+
+      if (isFirstTime) {
+        const aiResponse = await ChatService.sendMessage(studentId, `Hey there! Nice to meet you! I'm ${user.name}.`);
+        setMessages([{
+          id: 1,
+          sender: 'ai',
+          text: aiResponse,
+          timestamp: new Date()
+        }]);
+      } else {
+      const aiResponse = await ChatService.sendMessage(studentId, `Hey there! It's ${user.name} again. I'm here for another lesson!`);
       setMessages([{
         id: 1,
         sender: 'ai',
-        text: 'Hey there! How are you doing today?',
+        text: aiResponse,
         timestamp: new Date()
       }]);
-      
+    }
+
       setStatus('Connected');
     } catch (err) {
       console.error('Failed to initialize chat:', err);

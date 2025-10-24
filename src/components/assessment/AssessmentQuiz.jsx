@@ -203,7 +203,7 @@ const AssessmentQuiz = () => {
     try {
       // Initialize chat session and redirect
       await ChatService.initializeSession(studentId.student_id, userGraph.userGraph);
-      navigate('/chat');
+      navigate('/chat', { state: { isFirstTime: true } });
     } catch (err) {
       console.error('Error initializing chat:', err);
       setError('Failed to start lesson. Please try again.');
