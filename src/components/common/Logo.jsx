@@ -2,11 +2,11 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const Logo = () => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
-  const handleClick = () => {
-    navigate('/');
-  };
+  // const handleClick = () => {
+  //   navigate('/dashboard');
+  // };
 
   return (
     <svg
