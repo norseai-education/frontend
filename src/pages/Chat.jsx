@@ -31,6 +31,7 @@ const Chat = () => {
   const theme = useTheme();
   const navigate = useNavigate();
   const { user } = useAuth0();
+  const location = useLocation();
   
   // State for the chat messages, stored as an array of objects
   const [messages, setMessages] = useState([]);
@@ -88,7 +89,6 @@ const Chat = () => {
       // Get initial status
       await checkStatus();
       
-      const location = useLocation();
       const isFirstTime = location.state?.isFirstTime;
 
       if (isFirstTime) {
