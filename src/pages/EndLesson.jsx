@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Container, 
@@ -8,25 +8,63 @@ import {
   Button, 
   Card,
   CardContent,
-  LinearProgress
+  LinearProgress,
+  CircularProgress
 } from '@mui/material';
 import Layout from '../components/Layout';
+import { useAuth0 } from '@auth0/auth0-react';
+import UserService from '../services/userService';
+import UserGraphService from '../services/userGraphService';
 
 const EndLesson = () => {
   const navigate = useNavigate();
+  const { user } = useAuth0();
+  const [studentId, setStudentId] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [closeConcepts, setCloseConcepts] = useState(null);
+  const [graphLoading, setGraphLoading] = useState(false);
+  const [graphError, setGraphError] = useState(null);
+  const [learningObjective, setLearningObjective] = useState('');
 
   const handleReturnToDashboard = () => {
     navigate('/dashboard');
   };
 
-  // Placeholder data for the knowledge graph visualization
-  const knowledgeData = [
-    { topic: 'Vocabulary', progress: 85 },
-    { topic: 'Grammar', progress: 72 },
-    { topic: 'Conversation', progress: 90 },
-    { topic: 'Pronunciation', progress: 68 },
-    { topic: 'Reading', progress: 78 }
-  ];
+  // Fetch student ID
+  useEffect(() => {
+    const fetchStudentId = async () => {
+      if (user?.email) {
+        try {
+          const id = await UserService.getStudentId(user.email);
+          setStudentId(id.student_id);
+          setLoading(false);
+        } catch (err) {
+          console.error('Error fetching student ID:', err);
+          setLoading(false);
+        }
+      }
+    };
+    
+    fetchStudentId();
+  }, [user]);
+
+  // Fetch close concepts (progress data)
+  useEffect(() => {
+    const fetchCloseConcepts = async () => {
+      if (!studentId) return;
+      try {
+        setGraphLoading(true);
+        const graph = await UserGraphService.getCloseConcepts(studentId);
+        setCloseConcepts(graph || {});
+      } catch (e) {
+        console.error('Error fetching close concepts:', e);
+        setGraphError('Failed to load progress data.');
+      } finally {
+        setGraphLoading(false);
+      }
+    };
+    fetchCloseConcepts();
+  }, [studentId]);
 
   return (
     <Layout>
@@ -58,50 +96,81 @@ const EndLesson = () => {
             </Button>
           </Paper>
 
-          {/* Knowledge Graph Visualization Placeholder */}
+          {/* Real Progress Chart */}
           <Paper sx={{ p: 4 }}>
             <Typography variant="h5" gutterBottom sx={{ mb: 3, textAlign: 'center' }}>
               📊 Your Learning Progress
             </Typography>
             <Typography variant="body2" sx={{ mb: 3, textAlign: 'center', color: 'text.secondary' }}>
-              Knowledge Graph Visualization (Coming Soon)
+              Top concepts based on your current graph
             </Typography>
             
-            {/* Placeholder Bar Graph */}
+            {/* Real Progress Data */}
             <Box sx={{ mt: 3 }}>
-              {knowledgeData.map((item, index) => (
-                <Card key={index} sx={{ mb: 2, boxShadow: 1 }}>
-                  <CardContent sx={{ py: 2 }}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                      <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
-                        {item.topic}
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                        {item.progress}%
-                      </Typography>
-                    </Box>
-                    <LinearProgress 
-                      variant="determinate" 
-                      value={item.progress} 
-                      sx={{ 
-                        height: 8, 
-                        borderRadius: 4,
-                        backgroundColor: 'grey.200',
-                        '& .MuiLinearProgress-bar': {
-                          borderRadius: 4,
-                        }
-                      }}
-                    />
-                  </CardContent>
-                </Card>
-              ))}
-            </Box>
-            
-            {/* Placeholder note */}
-            <Box sx={{ mt: 3, p: 2, backgroundColor: 'grey.50', borderRadius: 2 }}>
-              <Typography variant="body2" sx={{ color: 'text.secondary', textAlign: 'center' }}>
-                This will be replaced with an interactive knowledge graph as a continous bar graph with before lesson vs. after lesson visuals.
-              </Typography>
+              {graphLoading ? (
+                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 120 }}>
+                  <CircularProgress size={24} />
+                </Box>
+              ) : graphError ? (
+                <Typography color="error" sx={{ textAlign: 'center' }}>{graphError}</Typography>
+              ) : closeConcepts && Object.keys(closeConcepts).length > 0 ? (
+                <Box>
+                  {Object.entries(closeConcepts)
+                    .slice(0, 10)
+                    .map(([concept, value]) => {
+                      const pct = Math.max(0, Math.min(100, Math.round(Number(value ?? 0) * 100)));
+                      const isCurrentLearningObjective = learningObjective && concept.toLowerCase() === learningObjective.toLowerCase();
+                      
+                      return (
+                        <Card key={concept} sx={{ mb: 2, boxShadow: 1 }}>
+                          <CardContent sx={{ py: 2 }}>
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                              <Typography 
+                                variant="body1" 
+                                sx={{ 
+                                  fontWeight: 'medium',
+                                  color: isCurrentLearningObjective ? '#9c27b0' : 'inherit',
+                                  fontWeight: isCurrentLearningObjective ? 'bold' : 'medium'
+                                }}
+                              >
+                                {isCurrentLearningObjective && '🎯 '}
+                                {concept}
+                              </Typography>
+                              <Typography 
+                                variant="body2" 
+                                sx={{ 
+                                  color: isCurrentLearningObjective ? '#9c27b0' : 'text.secondary',
+                                  fontWeight: isCurrentLearningObjective ? 'bold' : 'normal'
+                                }}
+                              >
+                                {pct}%
+                              </Typography>
+                            </Box>
+                            <LinearProgress 
+                              variant="determinate" 
+                              value={pct}
+                              sx={{ 
+                                height: 8, 
+                                borderRadius: 4,
+                                backgroundColor: 'grey.200',
+                                '& .MuiLinearProgress-bar': {
+                                  borderRadius: 4,
+                                  backgroundColor: isCurrentLearningObjective ? '#9c27b0' : undefined,
+                                }
+                              }}
+                            />
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
+                </Box>
+              ) : (
+                <Box sx={{ textAlign: 'center', mt: 4 }}>
+                  <Typography color="text.secondary">
+                    No progress data available yet. Complete more lessons to see your progress.
+                  </Typography>
+                </Box>
+              )}
             </Box>
           </Paper>
         </Box>
