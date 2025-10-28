@@ -96,7 +96,7 @@ const Chat = () => {
         setMessages([{
           id: 1,
           sender: 'ai',
-          text: aiResponse,
+          text: aiResponse.content,
           timestamp: new Date()
         }]);
       } else {
@@ -104,7 +104,7 @@ const Chat = () => {
       setMessages([{
         id: 1,
         sender: 'ai',
-        text: aiResponse,
+        text: aiResponse.content,
         timestamp: new Date()
       }]);
     }
@@ -156,7 +156,7 @@ const Chat = () => {
         }
       // Add the AI response to the state
       const aiMessageId = Date.now() + 1;
-      setMessages(prevMessages => [...prevMessages, { id: aiMessageId, sender: 'ai', text: aiResponse }]);
+      setMessages(prevMessages => [...prevMessages, { id: aiMessageId, sender: 'ai', text: aiResponse.content }]);
     } catch (error) {
       console.error('Chat error:', error);
       // Add error message to the state

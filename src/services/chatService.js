@@ -46,10 +46,9 @@ class ChatService {
       }
       
       console.log('Parsed data:', parsedData);
-      console.log('Content:', parsedData.content);
       
       if (parsedData.type === 'ai_response') {
-        return parsedData.content;
+        return parsedData;
       }
       if (parsedData.type === 'lesson_complete'){
         return "complete";
