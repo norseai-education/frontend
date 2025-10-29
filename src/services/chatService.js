@@ -54,7 +54,7 @@ class ChatService {
         return "complete";
       }
       if (parsedData.type === 'error'){
-        return parsedData.content;
+        return parsedData.message;
       }
       return parsedData.content;
     } catch (error) {
