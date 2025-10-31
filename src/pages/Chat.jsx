@@ -23,7 +23,9 @@ import { useAuth0 } from '@auth0/auth0-react';
 import Layout from '../components/Layout';
 import ChatService from '../services/chatService';
 import UserService from '../services/userService';
+import EvaluatorService from '../services/evaluatorService';
 import LatexRenderer from '../components/common/LatexRenderer';
+import EvaluationPanel from '../components/chat/EvaluationPanel';
 import { useLocation } from 'react-router-dom';
 
 // Main Chat component which can be used inside a larger application
@@ -45,6 +47,10 @@ const Chat = () => {
   const [studentId, setStudentId] = useState(null);
   // Error state
   const [error, setError] = useState('');
+  // Evaluation state
+  const [currentEvaluation, setCurrentEvaluation] = useState('');
+  const [currentGrade, setCurrentGrade] = useState(null);
+  const [evaluationObjectId, setEvaluationObjectId] = useState(null);
 
   // Ref to automatically scroll the chatbox to the bottom when new messages arrive
   const chatBoxRef = useRef(null);
@@ -93,21 +99,33 @@ const Chat = () => {
 
       if (isFirstTime) {
         const aiResponse = await ChatService.sendMessage(studentId, `Hey there! Nice to meet you! I'm ${user.name}.`);
-        setMessages([{
-          id: 1,
-          sender: 'ai',
-          text: aiResponse.content,
-          timestamp: new Date()
-        }]);
+        if (aiResponse && typeof aiResponse === 'object' && aiResponse.content) {
+          setMessages([{
+            id: 1,
+            sender: 'ai',
+            text: aiResponse.content,
+            timestamp: new Date()
+          }]);
+          // Store evaluation if present
+          if (aiResponse.evaluation || aiResponse.grade) {
+            await storeEvaluationData(aiResponse.evaluation, aiResponse.grade);
+          }
+        }
       } else {
-      const aiResponse = await ChatService.sendMessage(studentId, `Hey there! It's ${user.name} again. I'm here for another lesson!`);
-      setMessages([{
-        id: 1,
-        sender: 'ai',
-        text: aiResponse.content,
-        timestamp: new Date()
-      }]);
-    }
+        const aiResponse = await ChatService.sendMessage(studentId, `Hey there! It's ${user.name} again. I'm here for another lesson!`);
+        if (aiResponse && typeof aiResponse === 'object' && aiResponse.content) {
+          setMessages([{
+            id: 1,
+            sender: 'ai',
+            text: aiResponse.content,
+            timestamp: new Date()
+          }]);
+          // Store evaluation if present
+          if (aiResponse.evaluation || aiResponse.grade) {
+            await storeEvaluationData(aiResponse.evaluation, aiResponse.grade);
+          }
+        }
+      }
 
       setStatus('Connected');
     } catch (err) {
@@ -136,6 +154,33 @@ const Chat = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
+  // Helper function to store evaluation data
+  const storeEvaluationData = async (evaluation, grade) => {
+    if (!studentId) return;
+
+    try {
+      const objectId = await EvaluatorService.storeEvaluation(
+        studentId,
+        evaluation || '',
+        grade || {}
+      );
+      
+      // Store the object_id (assuming it's returned as a string or number)
+      setEvaluationObjectId(objectId);
+      setCurrentEvaluation(evaluation || '');
+      setCurrentGrade(grade || null);
+    } catch (err) {
+      console.error('Error storing evaluation:', err);
+      // Don't show error to user as this is background operation
+    }
+  };
+
+  // Handle evaluation update from EvaluationPanel
+  const handleEvaluationUpdate = (updatedEvaluation, updatedGrade) => {
+    setCurrentEvaluation(updatedEvaluation);
+    setCurrentGrade(updatedGrade);
+  };
+
   // Handle sending messages
   const handleSendMessage = async () => {
     const message = inputMessage.trim();
@@ -152,11 +197,25 @@ const Chat = () => {
       // Get the AI response using the regular sendMessage method
       const aiResponse = await ChatService.sendMessage(studentId, message);
       if (aiResponse === "complete") {
-          navigate('/endlesson');
+        navigate('/endlesson');
+        return;
+      }
+      
+      // Check if aiResponse is an object with content
+      if (aiResponse && typeof aiResponse === 'object' && aiResponse.content) {
+        // Add the AI response to the state
+        const aiMessageId = Date.now() + 1;
+        setMessages(prevMessages => [...prevMessages, { id: aiMessageId, sender: 'ai', text: aiResponse.content }]);
+        
+        // Store evaluation if present
+        if (aiResponse.evaluation || aiResponse.grade) {
+          await storeEvaluationData(aiResponse.evaluation, aiResponse.grade);
         }
-      // Add the AI response to the state
-      const aiMessageId = Date.now() + 1;
-      setMessages(prevMessages => [...prevMessages, { id: aiMessageId, sender: 'ai', text: aiResponse.content }]);
+      } else {
+        // Handle case where response is just a string
+        const aiMessageId = Date.now() + 1;
+        setMessages(prevMessages => [...prevMessages, { id: aiMessageId, sender: 'ai', text: String(aiResponse) }]);
+      }
     } catch (error) {
       console.error('Chat error:', error);
       // Add error message to the state
@@ -191,7 +250,7 @@ const Chat = () => {
 
   return (
     <Layout>
-      <Container maxWidth="lg" sx={{ height: 'calc(100vh - 100px)', display: 'flex', flexDirection: 'column', py: 2 }}>
+      <Container maxWidth="xl" sx={{ height: 'calc(100vh - 100px)', display: 'flex', flexDirection: 'column', py: 2 }}>
         {/* Header */}
         <Paper elevation={2} sx={{ p: 2, mb: 2 }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -228,92 +287,108 @@ const Chat = () => {
           </Alert>
         )}
 
-        {/* Messages Area */}
-        <Paper 
-          ref={chatBoxRef}
-          elevation={1} 
-          sx={{ 
-            flex: 1, 
-            overflow: 'auto',
-            p: 2,
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 2,
-            mb: 2
-          }}
-        >
-          {messages.map((message) => (
-            <Box
-              key={message.id}
-              sx={{
+        {/* Main Content Area - Chat and Evaluation Side by Side */}
+        <Box sx={{ display: 'flex', gap: 2, flex: 1, minHeight: 0 }}>
+          {/* Chat Area - Left Side */}
+          <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, minWidth: 0 }}>
+            {/* Messages Area */}
+            <Paper 
+              ref={chatBoxRef}
+              elevation={1} 
+              sx={{ 
+                flex: 1, 
+                overflow: 'auto',
+                p: 2,
                 display: 'flex',
-                justifyContent: message.sender === 'user' ? 'flex-end' : 'flex-start',
-                alignItems: 'flex-start',
-                gap: 1
+                flexDirection: 'column',
+                gap: 2,
+                mb: 2
               }}
             >
-              {message.sender === 'ai' && (
-                <Avatar sx={{ bgcolor: 'secondary.main', width: 32, height: 32 }}>
-                  <BotIcon fontSize="small" />
-                </Avatar>
-              )}
-              
-              <Paper
-                elevation={2}
-                sx={{
-                  p: 2,
-                  maxWidth: '70%',
-                  bgcolor: message.sender === 'user' ? 'primary.main' : '#f5f5f5',
-                  color: message.sender === 'user' ? 'primary.contrastText' : '#000000',
-                  borderRadius: 2,
-                  ...(message.sender === 'user' ? {
-                    borderBottomRightRadius: 4
-                  } : {
-                    borderBottomLeftRadius: 4
-                  })
-                }}
-              >
-                <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}>
-                  <LatexRenderer>{message.text || (isStreaming && message.sender === 'ai' ? '...' : '')}</LatexRenderer>
-                </Typography>
-              </Paper>
+              {messages.map((message) => (
+                <Box
+                  key={message.id}
+                  sx={{
+                    display: 'flex',
+                    justifyContent: message.sender === 'user' ? 'flex-end' : 'flex-start',
+                    alignItems: 'flex-start',
+                    gap: 1
+                  }}
+                >
+                  {message.sender === 'ai' && (
+                    <Avatar sx={{ bgcolor: 'secondary.main', width: 32, height: 32 }}>
+                      <BotIcon fontSize="small" />
+                    </Avatar>
+                  )}
+                  
+                  <Paper
+                    elevation={2}
+                    sx={{
+                      p: 2,
+                      maxWidth: '70%',
+                      bgcolor: message.sender === 'user' ? 'primary.main' : '#f5f5f5',
+                      color: message.sender === 'user' ? 'primary.contrastText' : '#000000',
+                      borderRadius: 2,
+                      ...(message.sender === 'user' ? {
+                        borderBottomRightRadius: 4
+                      } : {
+                        borderBottomLeftRadius: 4
+                      })
+                    }}
+                  >
+                    <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}>
+                      <LatexRenderer>{message.text || (isStreaming && message.sender === 'ai' ? '...' : '')}</LatexRenderer>
+                    </Typography>
+                  </Paper>
 
-              {message.sender === 'user' && (
-                <Avatar sx={{ bgcolor: 'primary.main', width: 32, height: 32 }}>
-                  <PersonIcon fontSize="small" />
-                </Avatar>
-              )}
-            </Box>
-          ))}
-          <div ref={messagesEndRef} />
-        </Paper>
+                  {message.sender === 'user' && (
+                    <Avatar sx={{ bgcolor: 'primary.main', width: 32, height: 32 }}>
+                      <PersonIcon fontSize="small" />
+                    </Avatar>
+                  )}
+                </Box>
+              ))}
+              <div ref={messagesEndRef} />
+            </Paper>
 
-        {/* Input Area */}
-        <Paper elevation={2} sx={{ p: 2 }}>
-          <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-end' }}>
-            <TextField
-              fullWidth
-              multiline
-              maxRows={4}
-              placeholder="Ask your AI tutor anything..."
-              value={inputMessage}
-              onChange={(e) => setInputMessage(e.target.value)}
-              onKeyPress={handleKeyPress}
-              disabled={isStreaming}
-              variant="outlined"
-              size="small"
-            />
-            <Button
-              variant="contained"
-              endIcon={<SendIcon />}
-              onClick={handleSendMessage}
-              disabled={isStreaming || !inputMessage.trim()}
-              sx={{ minWidth: 100 }}
-            >
-              {isStreaming ? 'Sending...' : 'Send'}
-            </Button>
+            {/* Input Area */}
+            <Paper elevation={2} sx={{ p: 2 }}>
+              <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-end' }}>
+                <TextField
+                  fullWidth
+                  multiline
+                  maxRows={4}
+                  placeholder="Ask your AI tutor anything..."
+                  value={inputMessage}
+                  onChange={(e) => setInputMessage(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  disabled={isStreaming}
+                  variant="outlined"
+                  size="small"
+                />
+                <Button
+                  variant="contained"
+                  endIcon={<SendIcon />}
+                  onClick={handleSendMessage}
+                  disabled={isStreaming || !inputMessage.trim()}
+                  sx={{ minWidth: 100 }}
+                >
+                  {isStreaming ? 'Sending...' : 'Send'}
+                </Button>
+              </Box>
+            </Paper>
           </Box>
-        </Paper>
+
+          {/* Evaluation Panel - Right Side */}
+          <Box sx={{ width: 350, minWidth: 350, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+            <EvaluationPanel
+              evaluation={currentEvaluation}
+              grade={currentGrade}
+              objectId={evaluationObjectId}
+              onUpdate={handleEvaluationUpdate}
+            />
+          </Box>
+        </Box>
       </Container>
     </Layout>
   );
