@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
@@ -20,32 +20,87 @@ import Analysis from './pages/Analysis';
 import Materials from './pages/Materials';
 import EndLesson from './pages/EndLesson';
 
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Home />,
+  },
+  {
+    path: "/login",
+    element: <Login />,
+  },
+  {
+    path: "/signup",
+    element: <Signup />,
+  },
+  {
+    path: "/loading",
+    element: <Loading />,
+  },
+  {
+    path: "/chat",
+    element: <Chat />,
+  },
+  {
+    path: "/profile",
+    element: <Profile />,
+  },
+  {
+    path: "/account",
+    element: <Account />,
+  },
+  {
+    path: "/dashboard",
+    element: <Dashboard />,
+  },
+  {
+    path: "/admin",
+    element: <Admin />,
+  },
+  {
+    path: "/logout",
+    element: <Logout />,
+  },
+  {
+    path: "/assessment",
+    element: <Assessment />,
+  },
+  {
+    path: "/access",
+    element: <Access />,
+  },
+  {
+    path: "/user/:id",
+    element: <UserDetails />,
+  },
+  {
+    path: "/apps",
+    element: <PlaceholderPage title="Apps" />,
+  },
+  {
+    path: "/materials",
+    element: <Materials />,
+  },
+  {
+    path: "/courses",
+    element: <Courses />,
+  },
+  {
+    path: "/analysis",
+    element: <Analysis />,
+  },
+  {
+    path: "/endlesson",
+    element: <EndLesson />,
+  },
+  {
+    path: "*",
+    element: <NotFound />,
+  },
+]);
+
 function App() {
-  return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/loading" element={<Loading />} />
-        <Route path="/chat" element={<Chat />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/account" element={<Account />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/admin" element={<Admin />} />
-        <Route path="/logout" element={<Logout />} />
-        <Route path="/assessment" element={<Assessment />} />
-        <Route path="/access" element={<Access />} />
-        <Route path="/user/:id" element={<UserDetails />} />
-        <Route path="/apps" element={<PlaceholderPage title="Apps" />} />
-        <Route path="/materials" element={<Materials />} />
-        <Route path="/courses" element={<Courses />} />
-        <Route path="/analysis" element={<Analysis />} />
-        <Route path="/endlesson" element={<EndLesson />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </Router>
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;
