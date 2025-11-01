@@ -18,7 +18,7 @@ import {
   Person as PersonIcon,
   ExitToApp as ExitIcon
 } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useBlocker } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import Layout from '../components/Layout';
 import ChatService from '../services/chatService';
@@ -51,6 +51,10 @@ const Chat = () => {
   const [currentEvaluation, setCurrentEvaluation] = useState('');
   const [currentGrade, setCurrentGrade] = useState(null);
   const [evaluationObjectId, setEvaluationObjectId] = useState(null);
+  // State to track if we should block navigation
+  const [shouldBlockNavigation, setShouldBlockNavigation] = useState(true);
+  // State to track if session is being ended (to prevent double blocking)
+  const [isEndingSession, setIsEndingSession] = useState(false);
 
   // Ref to automatically scroll the chatbox to the bottom when new messages arrive
   const chatBoxRef = useRef(null);
@@ -238,6 +242,10 @@ const Chat = () => {
   const handleEndSession = async () => {
     if (!window.confirm('Are you sure you want to end this lesson?')) return;
     
+    // Disable navigation blocking and end session
+    setShouldBlockNavigation(false);
+    setIsEndingSession(true);
+    
     try {
       await ChatService.endSession(studentId);
       navigate('/dashboard');
@@ -247,6 +255,41 @@ const Chat = () => {
       navigate('/dashboard');
     }
   };
+
+  // Block navigation when leaving chat page
+  const blocker = useBlocker(
+    ({ currentLocation, nextLocation }) =>
+      shouldBlockNavigation &&
+      !isEndingSession &&
+      currentLocation.pathname !== nextLocation.pathname
+  );
+
+  // Handle navigation blocking - show confirmation dialog
+  useEffect(() => {
+    if (blocker.state === 'blocked' && !isEndingSession && studentId) {
+      const shouldProceed = window.confirm(
+        'Are you sure you want to leave this lesson? Your session will be ended.'
+      );
+      
+      if (shouldProceed) {
+        // End session and proceed with navigation
+        setShouldBlockNavigation(false);
+        setIsEndingSession(true);
+        ChatService.endSession(studentId)
+          .then(() => {
+            blocker.proceed();
+          })
+          .catch((err) => {
+            console.error('Error ending session:', err);
+            // Proceed with navigation even if session end fails
+            blocker.proceed();
+          });
+      } else {
+        // Reset blocker to allow user to continue
+        blocker.reset();
+      }
+    }
+  }, [blocker, isEndingSession, studentId]);
 
   return (
     <Layout>
