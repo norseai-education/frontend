@@ -104,31 +104,99 @@ class ChatService {
    * Send message with streaming response
    * @param {number} studentId - Student's ID
    * @param {string} message - User's message
-   * @param {function} onChunk - Callback function for each chunk received
+   * @param {function} onStreamChunk - Callback function for streaming chunks (type: 'ai_response_stream')
+   * @param {function} onFinalResponse - Callback function for final response (type: 'ai_response')
    * @returns {Promise<void>}
    */
-  // static async sendMessageStream(studentId, message, onChunk) {
-  //   try {
-  //     const response = await apiClient.post(`/chat/s/${studentId}`);
-  //       method: 'POST',
-  //       headers: { 'Content-Type': 'application/json' },
-  //       body: JSON.stringify({ student_id: studentId, message: message }),
-  //     });
+  static async sendMessageStream(studentId, message, onStreamChunk, onFinalResponse) {
+    try {
+      const token = localStorage.getItem('session_token');
+      const headers = {
+        'Content-Type': 'application/json',
+      };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
 
-  //     const reader = response.body.getReader();
-  //     const decoder = new TextDecoder();
+      const response = await fetch(`${apiClient.defaults.baseURL}/chat/s/${studentId}`, {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify({ message: message.trim() }),
+      });
 
-  //     while (true) {
-  //       const { value, done } = await reader.read();
-  //       if (done) break;
-  //       const chunk = decoder.decode(value);
-  //       onChunk(chunk);
-  //     }
-  //   } catch (error) {
-  //     console.error('Streaming error:', error);
-  //     throw error;
-  //   }
-  // }
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        
+        // Process complete SSE events (format: "data: {...}\n\n")
+        // Split by double newline to get complete events
+        const events = buffer.split('\n\n');
+        // Keep the last potentially incomplete event in buffer
+        buffer = events.pop() || '';
+
+        for (const event of events) {
+          if (!event.trim()) continue;
+          
+          // Each event may have multiple lines, but we only care about "data: " lines
+          const lines = event.split('\n');
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              try {
+                const jsonString = line.substring(6); // Remove "data: " prefix
+                const parsedData = JSON.parse(jsonString);
+                
+                if (parsedData.type === 'ai_response_stream' && parsedData.content) {
+                  onStreamChunk(parsedData.content);
+                } else if (parsedData.type === 'ai_response') {
+                  onFinalResponse(parsedData);
+                } else if (parsedData.type === 'lesson_complete') {
+                  onFinalResponse({ type: 'lesson_complete', message: parsedData.message });
+                } else if (parsedData.type === 'error') {
+                  throw new Error(parsedData.message || 'An error occurred');
+                }
+              } catch (parseError) {
+                console.error('Error parsing SSE data:', parseError, line);
+              }
+            }
+          }
+        }
+      }
+
+      // Process any remaining buffer content
+      if (buffer.trim()) {
+        const lines = buffer.split('\n');
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            try {
+              const jsonString = line.substring(6);
+              const parsedData = JSON.parse(jsonString);
+              
+              if (parsedData.type === 'ai_response_stream' && parsedData.content) {
+                onStreamChunk(parsedData.content);
+              } else if (parsedData.type === 'ai_response') {
+                onFinalResponse(parsedData);
+              }
+            } catch (parseError) {
+              console.error('Error parsing SSE data:', parseError, line);
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Streaming error:', error);
+      throw error;
+    }
+  }
 
   /**
    * Health check for chat service
