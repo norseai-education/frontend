@@ -100,48 +100,36 @@ const Chat = () => {
       await checkStatus();
       
       const isFirstTime = location.state?.isFirstTime;
-      const initialMessage = isFirstTime 
-        ? `Hey there! Nice to meet you! I'm ${user.name}.`
-        : `Hey there! It's ${user.name} again. I'm here for another lesson!`;
 
-      // Create placeholder message for streaming
-      const aiMessageId = 1;
-      setMessages([{ id: aiMessageId, sender: 'ai', text: '', timestamp: new Date() }]);
-
-      let streamedContent = '';
-
-      // Handle streaming chunks
-      const onStreamChunk = (chunk) => {
-        streamedContent += chunk;
-        setMessages(prevMessages => 
-          prevMessages.map(msg => 
-            msg.id === aiMessageId 
-              ? { ...msg, text: streamedContent }
-              : msg
-          )
-        );
-      };
-
-      // Handle final response
-      const onFinalResponse = (finalResponse) => {
-        console.log('Final AI response (initialization):', finalResponse);
-        
-        setMessages(prevMessages => 
-          prevMessages.map(msg => 
-            msg.id === aiMessageId 
-              ? { ...msg, text: streamedContent || finalResponse.content || '' }
-              : msg
-          )
-        );
-
-        // Store evaluation if present
-        if (finalResponse.evaluation || finalResponse.grade) {
-          storeEvaluationData(finalResponse.evaluation, finalResponse.grade);
+      if (isFirstTime) {
+        const aiResponse = await ChatService.sendMessage(studentId, `Hey there! Nice to meet you! I'm ${user.name}.`);
+        if (aiResponse && typeof aiResponse === 'object' && aiResponse.content) {
+          setMessages([{
+            id: 1,
+            sender: 'ai',
+            text: aiResponse.content,
+            timestamp: new Date()
+          }]);
+          // Store evaluation if present
+          if (aiResponse.evaluation || aiResponse.grade) {
+            await storeEvaluationData(aiResponse.evaluation, aiResponse.grade);
+          }
         }
-      };
-
-      // Use streaming method
-      await ChatService.sendMessageStream(studentId, initialMessage, onStreamChunk, onFinalResponse);
+      } else {
+        const aiResponse = await ChatService.sendMessage(studentId, `Hey there! It's ${user.name} again. I'm here for another lesson!`);
+        if (aiResponse && typeof aiResponse === 'object' && aiResponse.content) {
+          setMessages([{
+            id: 1,
+            sender: 'ai',
+            text: aiResponse.content,
+            timestamp: new Date()
+          }]);
+          // Store evaluation if present
+          if (aiResponse.evaluation || aiResponse.grade) {
+            await storeEvaluationData(aiResponse.evaluation, aiResponse.grade);
+          }
+        }
+      }
 
       setStatus('Connected');
     } catch (err) {
@@ -207,65 +195,36 @@ const Chat = () => {
     setMessages(prevMessages => [...prevMessages, { id: userMessageId, sender: 'user', text: message }]);
     setInputMessage('');
     setIsStreaming(true);
-    setStatus('AI is typing...');
-
-    // Create a placeholder AI message for streaming
-    const aiMessageId = Date.now() + 1;
-    setMessages(prevMessages => [...prevMessages, { id: aiMessageId, sender: 'ai', text: '' }]);
+    setStatus('Mr. Norse is thinking...');
 
     try {
-      let streamedContent = '';
-
-      // Handle streaming chunks
-      const onStreamChunk = (chunk) => {
-        streamedContent += chunk;
-        // Update the streaming message in real-time
-        setMessages(prevMessages => 
-          prevMessages.map(msg => 
-            msg.id === aiMessageId 
-              ? { ...msg, text: streamedContent }
-              : msg
-          )
-        );
-      };
-
-      // Handle final response
-      const onFinalResponse = (finalResponse) => {
-        console.log('Final AI response:', finalResponse);
+      // Get the AI response using the regular sendMessage method
+      const aiResponse = await ChatService.sendMessage(studentId, message);
+      if (aiResponse === "complete") {
+        navigate('/endlesson');
+        return;
+      }
+      
+      // Check if aiResponse is an object with content
+      if (aiResponse && typeof aiResponse === 'object' && aiResponse.content) {
+        // Add the AI response to the state
+        const aiMessageId = Date.now() + 1;
+        setMessages(prevMessages => [...prevMessages, { id: aiMessageId, sender: 'ai', text: aiResponse.content }]);
         
-        // Update the message with final content (though we're already showing streamed content)
-        setMessages(prevMessages => 
-          prevMessages.map(msg => 
-            msg.id === aiMessageId 
-              ? { ...msg, text: streamedContent || finalResponse.content || '' }
-              : msg
-          )
-        );
-
-        // Handle lesson complete
-        if (finalResponse.type === 'lesson_complete') {
-          navigate('/endlesson');
-          return;
-        }
-
         // Store evaluation if present
-        if (finalResponse.evaluation || finalResponse.grade) {
-          storeEvaluationData(finalResponse.evaluation, finalResponse.grade);
+        if (aiResponse.evaluation || aiResponse.grade) {
+          await storeEvaluationData(aiResponse.evaluation, aiResponse.grade);
         }
-      };
-
-      // Use streaming method
-      await ChatService.sendMessageStream(studentId, message, onStreamChunk, onFinalResponse);
+      } else {
+        // Handle case where response is just a string
+        const aiMessageId = Date.now() + 1;
+        setMessages(prevMessages => [...prevMessages, { id: aiMessageId, sender: 'ai', text: String(aiResponse) }]);
+      }
     } catch (error) {
       console.error('Chat error:', error);
-      // Update the error message in the state
-      setMessages(prevMessages => 
-        prevMessages.map(msg => 
-          msg.id === aiMessageId 
-            ? { ...msg, text: "Sorry, an error occurred. Please try again." }
-            : msg
-        )
-      );
+      // Add error message to the state
+      const errorMessageId = Date.now() + 1;
+      setMessages(prevMessages => [...prevMessages, { id: errorMessageId, sender: 'ai', text: "Sorry, an error occurred. Please try again." }]);
     } finally {
       setIsStreaming(false);
       setStatus('Connected');
