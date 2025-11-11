@@ -59,6 +59,11 @@ const Chat = () => {
   // Ref to automatically scroll the chatbox to the bottom when new messages arrive
   const chatBoxRef = useRef(null);
   const messagesEndRef = useRef(null);
+  // Audio context for real-time audio playback
+  const audioContextRef = useRef(null);
+  const audioQueueRef = useRef([]);
+  const isPlayingAudioRef = useRef(false);
+  const audioMetadataRef = useRef({ sampleRate: 22050, dtype: 'float32' });
 
   // Fetch student ID from user email
   useEffect(() => {
@@ -84,6 +89,34 @@ const Chat = () => {
     }
   }, [messages]);
 
+  // Initialize audio context
+  useEffect(() => {
+    // Initialize Web Audio API context
+    const initAudioContext = async () => {
+      try {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioContextClass) {
+          audioContextRef.current = new AudioContextClass();
+          // Resume context if it's suspended (browser autoplay policy)
+          if (audioContextRef.current.state === 'suspended') {
+            await audioContextRef.current.resume();
+          }
+        }
+      } catch (error) {
+        console.error('Failed to initialize audio context:', error);
+      }
+    };
+
+    initAudioContext();
+
+    // Cleanup on unmount
+    return () => {
+      if (audioContextRef.current) {
+        audioContextRef.current.close().catch(console.error);
+      }
+    };
+  }, []);
+
   // Initialize chat when studentId is available
   useEffect(() => {
     if (studentId) {
@@ -100,34 +133,71 @@ const Chat = () => {
       await checkStatus();
       
       const isFirstTime = location.state?.isFirstTime;
+      const initialMessage = isFirstTime 
+        ? `Hey there! Nice to meet you! I'm ${user.name}.`
+        : `Hey there! It's ${user.name} again. I'm here for another lesson!`;
 
-      if (isFirstTime) {
-        const aiResponse = await ChatService.sendMessage(studentId, `Hey there! Nice to meet you! I'm ${user.name}.`);
-        if (aiResponse && typeof aiResponse === 'object' && aiResponse.content) {
+      // Clear audio queue for initial response
+      audioQueueRef.current = [];
+      isPlayingAudioRef.current = false;
+
+      // Create placeholder message
+      const aiMessageId = 1;
+      setMessages([{
+        id: aiMessageId,
+        sender: 'ai',
+        text: '...',
+        timestamp: new Date()
+      }]);
+
+      const aiResponse = await ChatService.sendMessage(studentId, initialMessage, {
+        onAudioChunk: handleAudioChunk,
+        onAudioMetadata: (metadata) => {
+          console.log('Audio metadata:', metadata);
+          // Store audio metadata for playback
+          if (metadata.sample_rate) {
+            audioMetadataRef.current.sampleRate = metadata.sample_rate;
+          }
+          if (metadata.dtype) {
+            audioMetadataRef.current.dtype = metadata.dtype;
+          }
+        },
+        onResponse: (response) => {
+          if (response && typeof response === 'object' && response.content) {
+            setMessages([{
+              id: aiMessageId,
+              sender: 'ai',
+              text: response.content,
+              timestamp: new Date()
+            }]);
+            // Store evaluation if present
+            if (response.evaluation || response.grade) {
+              storeEvaluationData(response.evaluation, response.grade);
+            }
+          }
+        },
+        onError: (error) => {
+          console.error('Initialization error:', error);
           setMessages([{
-            id: 1,
+            id: aiMessageId,
             sender: 'ai',
-            text: aiResponse.content,
+            text: 'Welcome! How can I help you today?',
             timestamp: new Date()
           }]);
-          // Store evaluation if present
-          if (aiResponse.evaluation || aiResponse.grade) {
-            await storeEvaluationData(aiResponse.evaluation, aiResponse.grade);
-          }
         }
-      } else {
-        const aiResponse = await ChatService.sendMessage(studentId, `Hey there! It's ${user.name} again. I'm here for another lesson!`);
-        if (aiResponse && typeof aiResponse === 'object' && aiResponse.content) {
-          setMessages([{
-            id: 1,
-            sender: 'ai',
-            text: aiResponse.content,
-            timestamp: new Date()
-          }]);
-          // Store evaluation if present
-          if (aiResponse.evaluation || aiResponse.grade) {
-            await storeEvaluationData(aiResponse.evaluation, aiResponse.grade);
-          }
+      });
+
+      // Handle backward compatibility
+      if (aiResponse && typeof aiResponse === 'object' && aiResponse.content) {
+        setMessages([{
+          id: aiMessageId,
+          sender: 'ai',
+          text: aiResponse.content,
+          timestamp: new Date()
+        }]);
+        // Store evaluation if present
+        if (aiResponse.evaluation || aiResponse.grade) {
+          await storeEvaluationData(aiResponse.evaluation, aiResponse.grade);
         }
       }
 
@@ -185,6 +255,106 @@ const Chat = () => {
     setCurrentGrade(updatedGrade);
   };
 
+  // Decode and play audio chunk (Float32 PCM format)
+  const playAudioChunk = async (base64Audio) => {
+    if (!audioContextRef.current) {
+      console.warn('Audio context not initialized');
+      return;
+    }
+
+    try {
+      // Decode base64 to ArrayBuffer
+      const binaryString = atob(base64Audio);
+      const bytes = new Uint8Array(binaryString.length);
+      for (let i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+
+      // Ensure byte length is multiple of 4 (Float32 is 4 bytes)
+      const float32Length = Math.floor(bytes.length / 4);
+      if (float32Length === 0) {
+        console.warn('Audio chunk too small, skipping');
+        // Try next chunk
+        if (audioQueueRef.current.length > 0) {
+          const nextChunk = audioQueueRef.current.shift();
+          playAudioChunk(nextChunk);
+        } else {
+          isPlayingAudioRef.current = false;
+        }
+        return;
+      }
+
+      // Convert bytes to Float32Array (using DataView for proper endianness)
+      const float32Data = new Float32Array(float32Length);
+      const dataView = new DataView(bytes.buffer);
+      for (let i = 0; i < float32Length; i++) {
+        float32Data[i] = dataView.getFloat32(i * 4, true); // true = little-endian
+      }
+      
+      const sampleRate = audioMetadataRef.current.sampleRate || 22050;
+
+      // Create AudioBuffer from Float32 PCM data
+      const audioBuffer = audioContextRef.current.createBuffer(
+        1, // mono channel
+        float32Data.length,
+        sampleRate
+      );
+
+      // Copy Float32 data to AudioBuffer
+      const channelData = audioBuffer.getChannelData(0);
+      channelData.set(float32Data);
+
+      // Create and play audio source
+      const source = audioContextRef.current.createBufferSource();
+      source.buffer = audioBuffer;
+      source.connect(audioContextRef.current.destination);
+
+      // Play the chunk
+      source.start(0);
+
+      // Clean up when finished
+      source.onended = () => {
+        // Check if there are more chunks in queue
+        if (audioQueueRef.current.length > 0) {
+          const nextChunk = audioQueueRef.current.shift();
+          playAudioChunk(nextChunk);
+        } else {
+          isPlayingAudioRef.current = false;
+        }
+      };
+    } catch (error) {
+      console.error('Error playing audio chunk:', error);
+      // Try next chunk in queue if available
+      if (audioQueueRef.current.length > 0) {
+        const nextChunk = audioQueueRef.current.shift();
+        playAudioChunk(nextChunk);
+      } else {
+        isPlayingAudioRef.current = false;
+      }
+    }
+  };
+
+  // Handle incoming audio chunk
+  const handleAudioChunk = (base64Audio) => {
+    if (!audioContextRef.current || audioContextRef.current.state === 'closed') {
+      console.warn('Audio context not available');
+      return;
+    }
+
+    // Resume context if suspended (browser autoplay policy)
+    if (audioContextRef.current.state === 'suspended') {
+      audioContextRef.current.resume().catch(console.error);
+    }
+
+    // If currently playing, queue the chunk; otherwise play immediately
+    if (isPlayingAudioRef.current) {
+      audioQueueRef.current.push(base64Audio);
+    } else {
+      isPlayingAudioRef.current = true;
+      playAudioChunk(base64Audio);
+    }
+  };
+
   // Handle sending messages
   const handleSendMessage = async () => {
     const message = inputMessage.trim();
@@ -197,34 +367,93 @@ const Chat = () => {
     setIsStreaming(true);
     setStatus('Mr. Norse is thinking...');
 
+    // Clear audio queue for new response
+    audioQueueRef.current = [];
+    isPlayingAudioRef.current = false;
+
+    // Create a placeholder AI message that will be updated with the final response
+    const aiMessageId = Date.now() + 1;
+    setMessages(prevMessages => [...prevMessages, { id: aiMessageId, sender: 'ai', text: '...' }]);
+
     try {
-      // Get the AI response using the regular sendMessage method
-      const aiResponse = await ChatService.sendMessage(studentId, message);
+      // Get the AI response using streaming with callbacks
+      const aiResponse = await ChatService.sendMessage(studentId, message, {
+        onAudioChunk: handleAudioChunk,
+        onAudioMetadata: (metadata) => {
+          console.log('Audio metadata:', metadata);
+          // Store audio metadata for playback
+          if (metadata.sample_rate) {
+            audioMetadataRef.current.sampleRate = metadata.sample_rate;
+          }
+          if (metadata.dtype) {
+            audioMetadataRef.current.dtype = metadata.dtype;
+          }
+        },
+        onResponse: (response) => {
+          if (response === "complete") {
+            navigate('/endlesson');
+            return;
+          }
+          
+          // Update the placeholder message with final response
+          if (response && typeof response === 'object' && response.content) {
+            setMessages(prevMessages => 
+              prevMessages.map(msg => 
+                msg.id === aiMessageId 
+                  ? { ...msg, text: response.content }
+                  : msg
+              )
+            );
+            
+            // Store evaluation if present
+            if (response.evaluation || response.grade) {
+              storeEvaluationData(response.evaluation, response.grade);
+            }
+          }
+        },
+        onError: (error) => {
+          console.error('Chat error:', error);
+          setMessages(prevMessages => 
+            prevMessages.map(msg => 
+              msg.id === aiMessageId 
+                ? { ...msg, text: "Sorry, an error occurred. Please try again." }
+                : msg
+            )
+          );
+        }
+      });
+
+      // Handle backward compatibility (if response is returned directly)
       if (aiResponse === "complete") {
         navigate('/endlesson');
         return;
       }
       
-      // Check if aiResponse is an object with content
       if (aiResponse && typeof aiResponse === 'object' && aiResponse.content) {
-        // Add the AI response to the state
-        const aiMessageId = Date.now() + 1;
-        setMessages(prevMessages => [...prevMessages, { id: aiMessageId, sender: 'ai', text: aiResponse.content }]);
+        // Update message if not already updated by callback
+        setMessages(prevMessages => 
+          prevMessages.map(msg => 
+            msg.id === aiMessageId 
+              ? { ...msg, text: aiResponse.content }
+              : msg
+          )
+        );
         
         // Store evaluation if present
         if (aiResponse.evaluation || aiResponse.grade) {
           await storeEvaluationData(aiResponse.evaluation, aiResponse.grade);
         }
-      } else {
-        // Handle case where response is just a string
-        const aiMessageId = Date.now() + 1;
-        setMessages(prevMessages => [...prevMessages, { id: aiMessageId, sender: 'ai', text: String(aiResponse) }]);
       }
     } catch (error) {
       console.error('Chat error:', error);
-      // Add error message to the state
-      const errorMessageId = Date.now() + 1;
-      setMessages(prevMessages => [...prevMessages, { id: errorMessageId, sender: 'ai', text: "Sorry, an error occurred. Please try again." }]);
+      // Update error message
+      setMessages(prevMessages => 
+        prevMessages.map(msg => 
+          msg.id === aiMessageId 
+            ? { ...msg, text: "Sorry, an error occurred. Please try again." }
+            : msg
+        )
+      );
     } finally {
       setIsStreaming(false);
       setStatus('Connected');

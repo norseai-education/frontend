@@ -1,5 +1,8 @@
 import apiClient from './apiClient';
 
+// Get base URL from apiClient config
+const API_BASE_URL = apiClient.defaults?.baseURL || 'https://norseai.sunshinek12.com/api';
+
 /**
  * Chat service for handling AI chat operations with streaming support
  */
@@ -23,42 +26,119 @@ class ChatService {
   }
 
   /**
-   * Send message and get response
+   * Send message and get streaming response with audio support
    * @param {number} studentId - Student's ID
    * @param {string} message - User's message
-   * @returns {Promise<string>} - Complete response
+   * @param {object} callbacks - Callback functions for different event types
+   * @param {function} callbacks.onAudioChunk - Called with base64 audio chunk
+   * @param {function} callbacks.onAudioMetadata - Called with audio metadata
+   * @param {function} callbacks.onResponse - Called with final AI response
+   * @param {function} callbacks.onError - Called on error
+   * @returns {Promise<object>} - Final response object
    */
-  static async sendMessage(studentId, message) {
+  static async sendMessage(studentId, message, callbacks = {}) {
+    const {
+      onAudioChunk,
+      onAudioMetadata,
+      onResponse,
+      onError
+    } = callbacks;
+
     try {
-      const response = await apiClient.post(`/chat/s/${studentId}`, {
-        message: message.trim()
+      // Get auth token
+      const token = localStorage.getItem('session_token');
+      const headers = {
+        'Content-Type': 'application/json',
+      };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      // Use fetch for streaming support
+      const response = await fetch(`${API_BASE_URL}/chat/s/${studentId}`, {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify({ message: message.trim() })
       });
 
-      console.log('Full response:', response.data);
-      
-      // Parse the response to dict
-      let parsedData;
-      if (typeof response.data === 'string' && response.data.startsWith('data: ')) {
-        const jsonString = response.data.substring(6); // Remove "data: " prefix
-        parsedData = JSON.parse(jsonString);
-      } else {
-        parsedData = response.data;
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
-      console.log('Parsed data:', parsedData);
-      
-      if (parsedData.type === 'ai_response') {
-        return parsedData;
+
+      // Read the stream
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+      let finalResponse = null;
+
+      while (true) {
+        const { done, value } = await reader.read();
+        
+        if (done) {
+          break;
+        }
+
+        // Decode chunk and add to buffer
+        buffer += decoder.decode(value, { stream: true });
+
+        // Process complete SSE messages (format: "data: {...}\n\n")
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || ''; // Keep incomplete line in buffer
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            try {
+              const jsonString = line.substring(6); // Remove "data: " prefix
+              const parsedData = JSON.parse(jsonString);
+
+              console.log('Parsed SSE data:', parsedData);
+
+              // Handle different event types
+              if (parsedData.type === 'audio_stream' && parsedData.audio_chunk) {
+                if (onAudioChunk) {
+                  onAudioChunk(parsedData.audio_chunk);
+                }
+              } else if (parsedData.type === 'audio_metadata') {
+                if (onAudioMetadata) {
+                  onAudioMetadata(parsedData);
+                }
+              } else if (parsedData.type === 'ai_response') {
+                finalResponse = parsedData;
+                if (onResponse) {
+                  onResponse(parsedData);
+                }
+              } else if (parsedData.type === 'lesson_complete') {
+                finalResponse = "complete";
+                if (onResponse) {
+                  onResponse("complete");
+                }
+              } else if (parsedData.type === 'error') {
+                const error = new Error(parsedData.message || 'Unknown error');
+                if (onError) {
+                  onError(error);
+                }
+                throw error;
+              }
+            } catch (parseError) {
+              console.error('Error parsing SSE data:', parseError, 'Line:', line);
+            }
+          }
+        }
       }
-      if (parsedData.type === 'lesson_complete'){
+
+      // Return final response for backward compatibility
+      if (finalResponse === "complete") {
         return "complete";
       }
-      if (parsedData.type === 'error'){
-        return parsedData.message;
+      if (finalResponse && typeof finalResponse === 'object') {
+        return finalResponse;
       }
-      return parsedData.content;
+      return finalResponse || { content: '' };
     } catch (error) {
       console.error('Send message error:', error);
+      if (onError) {
+        onError(error);
+      }
       throw error;
     }
   }
